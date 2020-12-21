@@ -1,14 +1,15 @@
-# Use root/example as user/password credentials
-version: '3.1'
+version: "3"
 
 services:
 
   db:
-    image: mysql
-    command: --default-authentication-plugin=mysql_native_password
+    build: .
+    command: --2default-authentication-plugin=mysql_native_password
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 329issocute
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=earlgray
+      - MYSQL_PASSWORD=329issocute
 
   adminer:
     image: adminer

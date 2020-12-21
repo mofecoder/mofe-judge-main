@@ -17,5 +17,7 @@ pub fn establish_connection() -> MysqlConnection {
         db_user, db_pass, db_host, db_port, db_name
     );
 
+    println!("db_url: {}", db_url);
+
     MysqlConnection::establish(&db_url).expect("error connect to db")
 }

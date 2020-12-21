@@ -1,0 +1,1 @@
+INSERT INTO p6jav_cafecoder_prod.ar_internal_metadata (`key`, value, created_at, updated_at) VALUES ('environment', 'production', '2020-08-11 07:15:48.127436', '2020-08-11 07:15:48.127436');
