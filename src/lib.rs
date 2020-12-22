@@ -1,6 +1,4 @@
-#[macro_use]
-extern crate diesel;
-
+pub mod models;
 pub mod db;
-pub mod schema;
-pub mod model;
+pub mod docker_lib;
+pub mod utils;

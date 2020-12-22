@@ -1,23 +1,18 @@
-use diesel::mysql::MysqlConnection;
-use diesel::prelude::*;
 use dotenv::dotenv;
+use sqlx::{MySql, mysql::MySqlPool};
 use std::env;
 
-pub fn establish_connection() -> MysqlConnection {
+pub async fn new_pool() -> Result<sqlx::Pool<MySql>, sqlx::Error> {
     dotenv().ok();
+    let url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
-    let db_name = env::var("DB_NAME").expect("db_name must be set");
-    let db_user = env::var("DB_USER").expect("db_user must be set");
-    let db_pass = env::var("DB_PASS").expect("db_pass must be set");
-    let db_host = env::var("DB_HOST").expect("db_host must be set");
-    let db_port = env::var("DB_PORT").expect("db_port must be set");
+    let mut pool = MySqlPool::connect(&url).await?;
 
-    let db_url = format!(
-        "mysql://{}:{}@{}:{}/{}",
-        db_user, db_pass, db_host, db_port, db_name
-    );
-
-    println!("db_url: {}", db_url);
-
-    MysqlConnection::establish(&db_url).expect("error connect to db")
+    Ok(pool)
 }
+
+fn print_type_of<T>(_: &T) {
+    println!("{}", std::any::type_name::<T>())
+}
+
+
