@@ -8,6 +8,7 @@ const IMAGE: &str = "cafecoder";
 
 // see https://github.com/fussybeaver/bollard
 
+#[derive(Clone)]
 pub struct Docker {
     docker: bollard::Docker,
     pub container_name: String,

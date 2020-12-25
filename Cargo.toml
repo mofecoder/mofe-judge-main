@@ -13,4 +13,5 @@ dotenv = "0.15.0"
 chrono = "0.4"
 bollard = "0.9"
 rand = "0.8.0"
-tokio = "0.2"
+tokio = { version = "0.2", features = [ "full" ] }
+hyper = "0.14"

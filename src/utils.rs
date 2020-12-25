@@ -5,13 +5,11 @@ pub fn print_type_of<T>(_: &T) {
 }
 
 pub async fn gen_rand_string(digits: usize) -> String {
-    let mut name = rand::thread_rng()
+    let name = rand::thread_rng()
         .sample_iter(&Alphanumeric)
-        .take(32)
+        .take(digits)
         .map(char::from)
         .collect::<String>();
-    
-
 
     name
 }
