@@ -1,6 +1,6 @@
 use chrono::NaiveDateTime;
 
-#[derive(Debug)]
+#[derive(Debug, sqlx::FromRow)]
 pub struct Submits {
     pub id: i64,
     pub user_id: i32,

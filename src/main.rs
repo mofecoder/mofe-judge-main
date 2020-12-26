@@ -1,6 +1,11 @@
 use async_std::task;
 use cafecoder_rs::{db, docker_lib, error::Error, models::Submits, utils};
-use std::{collections::HashMap, sync::{Arc, Mutex}, thread::sleep, time::Duration};
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+    thread::sleep,
+    time::Duration,
+};
 
 const MAX_THREADS: i32 = 2;
 
@@ -8,25 +13,28 @@ const MAX_THREADS: i32 = 2;
 async fn main() -> Result<(), Error> {
     let pool = db::new_pool().await?;
     let now = Arc::new(Mutex::new(0));
+    #[allow(unused_mut, unused)]
     let mut json_map: HashMap<i64, String> = HashMap::new();
 
     // let mut handles = Vec::new();
 
+    #[allow(clippy::never_loop)]
     loop {
-        let submits: Vec<Submits> = sqlx::query_as!(
-            Submits,
+        #[allow(unused)]
+        let submits: Vec<Submits> = sqlx::query_as(
             r#"
             SELECT * FROM submits 
             WHERE status = 'WJ' OR status = 'WR' AND deleted_at IS NULL
             ORDER BY updated_at ASC
             LIMIT 2
-            "#
+            "#,
         )
         .fetch_all(&pool)
         .await?;
 
         let submits: Vec<Submits> = Vec::new();
 
+        #[allow(unused)]
         for submit in submits {
             while *now.lock().expect("couldn't lock {now}") < MAX_THREADS {}
             *now.lock().expect("couldn't lock {now}") += 1;
@@ -42,13 +50,16 @@ async fn main() -> Result<(), Error> {
                     let name = utils::gen_rand_string(32).await;
                     let mut rt = tokio::runtime::Runtime::new().unwrap();
 
-                    let container = rt
-                        .block_on(async { docker_.lock().unwrap().container_create(&name).await })?;
+                    #[allow(unused)]
+                    let container = rt.block_on(async {
+                        docker_.lock().unwrap().container_create(&name).await
+                    })?;
 
                     rt.block_on(async { docker_.lock().unwrap().container_remove().await })?;
 
                     Ok(())
-                }).await;
+                })
+                .await;
                 thread_result?;
 
                 *now.lock().expect("couldn't lock {now}") += 1;
