@@ -13,24 +13,28 @@ const MAX_THREADS: i32 = 2;
 async fn main() -> Result<(), Error> {
     let pool = db::new_pool().await?;
     let now = Arc::new(Mutex::new(0));
+    #[allow(unused_mut, unused)]
     let mut json_map: HashMap<i64, String> = HashMap::new();
 
     // let mut handles = Vec::new();
 
+    #[allow(clippy::never_loop)]
     loop {
+        #[allow(unused)]
         let submits: Vec<Submits> = sqlx::query_as(
             r#"
             SELECT * FROM submits 
             WHERE status = 'WJ' OR status = 'WR' AND deleted_at IS NULL
             ORDER BY updated_at ASC
             LIMIT 2
-            "#
+            "#,
         )
         .fetch_all(&pool)
         .await?;
 
         let submits: Vec<Submits> = Vec::new();
 
+        #[allow(unused)]
         for submit in submits {
             while *now.lock().expect("couldn't lock {now}") < MAX_THREADS {}
             *now.lock().expect("couldn't lock {now}") += 1;
@@ -46,6 +50,7 @@ async fn main() -> Result<(), Error> {
                     let name = utils::gen_rand_string(32).await;
                     let mut rt = tokio::runtime::Runtime::new().unwrap();
 
+                    #[allow(unused)]
                     let container = rt.block_on(async {
                         docker_.lock().unwrap().container_create(&name).await
                     })?;
