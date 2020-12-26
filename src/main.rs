@@ -18,8 +18,7 @@ async fn main() -> Result<(), Error> {
     // let mut handles = Vec::new();
 
     loop {
-        let submits: Vec<Submits> = sqlx::query_as!(
-            Submits,
+        let submits: Vec<Submits> = sqlx::query_as(
             r#"
             SELECT * FROM submits 
             WHERE status = 'WJ' OR status = 'WR' AND deleted_at IS NULL
