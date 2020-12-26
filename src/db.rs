@@ -1,5 +1,5 @@
 use dotenv::dotenv;
-use sqlx::{MySql, mysql::MySqlPool};
+use sqlx::{mysql::MySqlPool, MySql};
 use std::env;
 
 pub async fn new_pool() -> Result<sqlx::Pool<MySql>, sqlx::Error> {
@@ -10,7 +10,3 @@ pub async fn new_pool() -> Result<sqlx::Pool<MySql>, sqlx::Error> {
 
     Ok(pool)
 }
-
-
-
-

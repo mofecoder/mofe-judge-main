@@ -1,6 +1,11 @@
 use async_std::task;
 use cafecoder_rs::{db, docker_lib, error::Error, models::Submits, utils};
-use std::{collections::HashMap, sync::{Arc, Mutex}, thread::sleep, time::Duration};
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+    thread::sleep,
+    time::Duration,
+};
 
 const MAX_THREADS: i32 = 2;
 
@@ -42,13 +47,15 @@ async fn main() -> Result<(), Error> {
                     let name = utils::gen_rand_string(32).await;
                     let mut rt = tokio::runtime::Runtime::new().unwrap();
 
-                    let container = rt
-                        .block_on(async { docker_.lock().unwrap().container_create(&name).await })?;
+                    let container = rt.block_on(async {
+                        docker_.lock().unwrap().container_create(&name).await
+                    })?;
 
                     rt.block_on(async { docker_.lock().unwrap().container_remove().await })?;
 
                     Ok(())
-                }).await;
+                })
+                .await;
                 thread_result?;
 
                 *now.lock().expect("couldn't lock {now}") += 1;
