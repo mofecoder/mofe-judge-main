@@ -17,6 +17,18 @@ pub struct Submits {
     pub deleted_at: Option<NaiveDateTime>,
 }
 
+#[derive(Debug, sqlx::FromRow)]
+pub struct TestcaseSets {
+    pub id: i64,
+    pub point: i32,
+}
+
+#[derive(Debug, sqlx::FromRow, PartialEq, Eq, Hash)]
+pub struct TestcaseTestcaseSets {
+    pub testcase_id: i64,
+    pub testcase_set_id: i64,
+}
+
 /*
 #[derive(Debug)]
 pub struct Submits {
@@ -38,7 +50,7 @@ pub struct Submits {
 
 /*
 #[derive(Insertable)]
-#[table_name="submits"]
+p#[table_name="submits"]
 pub struct NewSubmits {
     pub status: String,
     pub point: Option<i32>,
