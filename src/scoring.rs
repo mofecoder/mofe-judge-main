@@ -6,6 +6,7 @@ use super::{
 use std::collections::HashMap;
 
 #[allow(dead_code)]
+#[allow(unused_variables)]
 pub async fn scoring(submit: Submits) -> Result<i64, Error> {
     if submit.status == "IE".to_string() || submit.status == "CE".to_string() {
         return Ok(0);
@@ -23,9 +24,11 @@ WHERE deleted_at IS NULL AND problem_id = $1
     let testcase_testcase_sets: Vec<TestcaseTestcaseSets> = sqlx::query_as(
         r#"
 SELECT testcase_id, testcase_set_id FROM testcase_testcase_sets
-WHERE problem_id = $1 AND testcase
+INNER JOIN testcases ON testcase_testcase_sets.testcase_id = testcases.id
+WHERE problem_id = $1 AND testcase_testcase_sets.deleted IS NULL AND testcases.deleted IS NULL
 "#,
     )
+    .bind(submit.problem_id)
     .fetch_all(&pool)
     .await?;
 
@@ -38,6 +41,7 @@ WHERE problem_id = $1 AND testcase
     let mut score: i64 = 0;
     for testcase_set in &testcase_sets {
         #[allow(non_snake_case)]
+        #[allow(unused_mut)]
         let mut is_AC = true;
         for testcase_id in &testcase_set_map[&testcase_set.id] {}
         if is_AC {
