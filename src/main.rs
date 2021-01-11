@@ -17,12 +17,15 @@ async fn main() -> Result<(), Error> {
     #[allow(unused_mut, unused)]
     let json_map = Arc::new(Mutex::new(json_map));
 
+    let json_map_ = json_map.clone();
     tokio::spawn(async move {
-        if let Err(e) = server(json_map.clone()).await {
+        if let Err(e) = server(json_map_).await {
             eprintln!("{:?}", e);
             return;
         }
     });
+
+  
 
     #[allow(clippy::never_loop)]
     loop {
@@ -46,9 +49,10 @@ async fn main() -> Result<(), Error> {
             *now.lock().expect("couldn't lock {now}") += 1;
 
             let now = now.clone();
+            let json_map_ = json_map.clone();
 
             let _: task::JoinHandle<Result<(), Error>> = task::spawn(async move {
-                let docker = Arc::new(Mutex::new(docker_lib::Docker::new()?));
+                let docker = Arc::new(Mutex::new(docker_lib::Docker::new(json_map_.clone())?));
                 let mut rt = tokio::runtime::Runtime::new().unwrap();
 
                 let docker_ = docker.clone();

@@ -19,6 +19,19 @@ pub struct Submits {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct RequestJSON {
+    pub session_id: String,
+    pub mode: String, // "judge", "compile", "download"
+    pub command: String, // compile_cmd, execute_cmd
+    pub problem_id: String,
+    pub code_path: String,
+    pub filename: String,
+    pub time_limit: usize,
+    pub testcase: Testcase,
+    pub problem: Problem,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct CmdResultJSON {
     pub session_id: String,
     pub time: usize,
@@ -37,6 +50,19 @@ pub struct TestcaseResult {
     pub status: String,
     pub execution_time: usize,
     pub execution_memory: usize,
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct Testcase {
+    pub testcase_id: usize,
+    pub name: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct Problem {
+    pub problem_id: usize,
+    pub uuid: String,
 }
 
 /*
