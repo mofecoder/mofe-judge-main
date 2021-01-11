@@ -1,77 +1,37 @@
-use cafecoder_rs::{db, docker_lib, error::Error, models::Submits, utils};
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-    thread::sleep,
-    time::Duration,
-};
-use tokio::task;
+mod config;
+mod db;
+mod docker_lib;
+mod models;
+mod repository;
+mod utils;
 
-const MAX_THREADS: i32 = 2;
+use anyhow::Result;
+use repository::SubmitRepository;
+use std::time::Duration;
+use tokio::time::delay_for;
 
-#[tokio::main]
-async fn main() -> Result<(), Error> {
-    let pool = db::new_pool().await?;
-    let now = Arc::new(Mutex::new(0));
-    #[allow(unused_mut, unused)]
-    let mut json_map: HashMap<i64, String> = HashMap::new();
-
-    // let mut handles = Vec::new();
+#[tokio::main(core_threads = 2)]
+async fn main() -> Result<()> {
+    let config = config::load_config()?;
+    let pool = db::new_pool(&config).await?;
 
     #[allow(clippy::never_loop)]
     loop {
-        #[allow(unused)]
-        let submits: Vec<Submits> = sqlx::query_as(
-            r#"
-            SELECT * FROM submits 
-            WHERE status = 'WJ' OR status = 'WR' AND deleted_at IS NULL
-            ORDER BY updated_at ASC
-            LIMIT 2
-            "#,
-        )
-        .fetch_all(&pool)
-        .await?;
+        let submits = pool.get_submits().await?;
 
-        let submits: Vec<Submits> = Vec::new();
+        // submits を2つずつに分割
+        for chunk in submits.chunks(2) {
+            let _first = chunk.get(0);
+            let _second = chunk.get(1);
 
-        #[allow(unused)]
-        for submit in submits {
-            while *now.lock().expect("couldn't lock {now}") < MAX_THREADS {}
-            *now.lock().expect("couldn't lock {now}") += 1;
+            // submit の情報 (first, second) を Docker::new に渡すべき？
+            let container1 = docker_lib::Docker::new()?;
+            let container2 = docker_lib::Docker::new()?;
 
-            let now = now.clone();
-
-            let _: task::JoinHandle<Result<(), Error>> = task::spawn(async move {
-                let docker = Arc::new(Mutex::new(docker_lib::Docker::new()?));
-                let mut rt = tokio::runtime::Runtime::new().unwrap();
-
-                let docker_ = docker.clone();
-                let thread_result: Result<(), Error> = task::spawn(async move {
-                    let name = utils::gen_rand_string(32).await;
-                    let mut rt = tokio::runtime::Runtime::new().unwrap();
-
-                    #[allow(unused)]
-                    let container = rt.block_on(async {
-                        docker_.lock().unwrap().container_create(&name).await
-                    })?;
-
-                    rt.block_on(async { docker_.lock().unwrap().container_remove().await })?;
-
-                    Ok(())
-                })
-                .await?;
-                thread_result?;
-
-                *now.lock().expect("couldn't lock {now}") += 1;
-                rt.block_on(async move { docker.lock().unwrap().container_remove().await })?;
-
-                Ok(())
-            });
+            // container1, 2 の実行が終わるのを同時に待つ
+            futures::try_join!(container1, container2)?;
         }
 
-        sleep(Duration::from_secs(329329));
-        break;
+        delay_for(Duration::from_secs(329329)).await;
     }
-
-    Ok(())
 }
