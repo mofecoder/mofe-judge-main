@@ -1,22 +1,28 @@
-use async_std::task;
-use cafecoder_rs::{db, docker_lib, error::Error, models::Submits, utils};
+use cafecoder_rs::{db, docker_lib, models::*, server::server, utils};
 use std::{
     collections::HashMap,
     sync::{Arc, Mutex},
-    thread::sleep,
-    time::Duration,
 };
+use tokio::task;
+use anyhow::Error;
 
 const MAX_THREADS: i32 = 2;
 
-#[async_std::main]
+#[tokio::main]
 async fn main() -> Result<(), Error> {
     let pool = db::new_pool().await?;
     let now = Arc::new(Mutex::new(0));
-    #[allow(unused_mut, unused)]
-    let mut json_map: HashMap<i64, String> = HashMap::new();
 
-    // let mut handles = Vec::new();
+    let json_map: HashMap<String, CmdResultJSON> = HashMap::new();
+    #[allow(unused_mut, unused)]
+    let json_map = Arc::new(Mutex::new(json_map));
+
+    tokio::spawn(async move {
+        if let Err(e) = server(json_map.clone()).await {
+            eprintln!("{:?}", e);
+            return;
+        }
+    });
 
     #[allow(clippy::never_loop)]
     loop {
@@ -59,7 +65,8 @@ async fn main() -> Result<(), Error> {
 
                     Ok(())
                 })
-                .await;
+                .await?;
+
                 thread_result?;
 
                 *now.lock().expect("couldn't lock {now}") += 1;
@@ -69,7 +76,6 @@ async fn main() -> Result<(), Error> {
             });
         }
 
-        sleep(Duration::from_secs(329329));
         break;
     }
 

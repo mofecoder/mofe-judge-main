@@ -3,3 +3,4 @@ pub mod docker_lib;
 pub mod error;
 pub mod models;
 pub mod utils;
+pub mod server;

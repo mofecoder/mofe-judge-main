@@ -1,4 +1,5 @@
 use chrono::NaiveDateTime;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, sqlx::FromRow)]
 pub struct Submits {
@@ -15,6 +16,27 @@ pub struct Submits {
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
     pub deleted_at: Option<NaiveDateTime>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct CmdResultJSON {
+    pub session_id: String,
+    pub time: usize,
+    pub result: bool,
+    pub message: String,
+    pub mem_usage: usize,
+    pub stdout_size: usize,
+    pub timeout: bool,
+    pub testcase_result: TestcaseResult,
+}
+
+#[derive(Debug, Clone, sqlx::FromRow, Serialize, Deserialize, PartialEq)]
+pub struct TestcaseResult {
+    pub submit_id: usize,
+    pub testcase_id: usize,
+    pub status: String,
+    pub execution_time: usize,
+    pub execution_memory: usize,
 }
 
 /*
