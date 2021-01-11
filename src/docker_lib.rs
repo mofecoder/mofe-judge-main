@@ -1,7 +1,13 @@
+use anyhow::Result;
 use bollard::{
     container::{Config, CreateContainerOptions, RemoveContainerOptions},
-    errors::Error,
     models::{ContainerCreateResponse, HostConfig},
+};
+use futures::future::FutureExt;
+use std::{
+    future::Future,
+    pin::Pin,
+    task::{Context, Poll},
 };
 
 const IMAGE: &str = "cafecoder";
@@ -16,7 +22,7 @@ pub struct Docker {
 }
 
 impl Docker {
-    pub fn new() -> Result<Docker, Error> {
+    pub fn new() -> Result<Docker> {
         let docker = bollard::Docker::connect_with_unix_defaults()?;
         Ok(Docker {
             docker,
@@ -25,7 +31,7 @@ impl Docker {
         })
     }
 
-    pub async fn container_create(&mut self, name: &str) -> Result<ContainerCreateResponse, Error> {
+    pub async fn container_create(&mut self, name: &str) -> Result<ContainerCreateResponse> {
         let options = Some(CreateContainerOptions { name });
         let config = Config {
             image: Some(IMAGE),
@@ -52,10 +58,11 @@ impl Docker {
             .ip_address
             .expect("couldn't get IP address");
 
-        self.docker.create_container(options, config).await
+        let res = self.docker.create_container(options, config).await?;
+        Ok(res)
     }
 
-    pub async fn container_remove(&self) -> Result<(), Error> {
+    pub async fn container_remove(&self) -> Result<()> {
         let options = RemoveContainerOptions {
             force: true,
             ..Default::default()
@@ -63,6 +70,21 @@ impl Docker {
 
         self.docker
             .remove_container(&self.container_name, Some(options))
-            .await
+            .await?;
+        Ok(())
+    }
+}
+
+impl Future for Docker {
+    type Output = Result<()>;
+
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        let mut fut = async {
+            self.as_mut().container_create("THIS IS DUMMY").await?;
+            self.as_mut().container_remove().await?;
+            Ok(())
+        }
+        .boxed_local();
+        fut.poll_unpin(cx)
     }
 }
