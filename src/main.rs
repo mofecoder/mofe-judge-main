@@ -1,4 +1,3 @@
-use async_std::task;
 use cafecoder_rs::{db, docker_lib, error::Error, models::Submits, utils};
 use std::{
     collections::HashMap,
@@ -6,10 +5,11 @@ use std::{
     thread::sleep,
     time::Duration,
 };
+use tokio::task;
 
 const MAX_THREADS: i32 = 2;
 
-#[async_std::main]
+#[tokio::main]
 async fn main() -> Result<(), Error> {
     let pool = db::new_pool().await?;
     let now = Arc::new(Mutex::new(0));
@@ -59,7 +59,7 @@ async fn main() -> Result<(), Error> {
 
                     Ok(())
                 })
-                .await;
+                .await?;
                 thread_result?;
 
                 *now.lock().expect("couldn't lock {now}") += 1;
