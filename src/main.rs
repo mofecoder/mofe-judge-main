@@ -1,37 +1,33 @@
 mod config;
 mod db;
-mod docker_lib;
 mod models;
 mod repository;
+mod task;
 mod utils;
 
 use anyhow::Result;
-use repository::SubmitRepository;
-use std::time::Duration;
-use tokio::time::delay_for;
+use futures::future::join_all;
+use std::sync::Arc;
 
-#[tokio::main(core_threads = 2)]
+// TODO(magurotuna): ここの値も要検討
+const JOB_THREADS: usize = 3;
+
+// TODO(magurotuna): スレッド数指定を柔軟に行うため、Tokio の RuntimeBuilder を使うよう書き換える
+#[tokio::main(core_threads = 4)]
 async fn main() -> Result<()> {
     let config = config::load_config()?;
-    let pool = db::new_pool(&config).await?;
+    let db_conn = Arc::new(db::new_pool(&config).await?);
+    let docker_conn = Arc::new(bollard::Docker::connect_with_unix_defaults()?);
 
-    #[allow(clippy::never_loop)]
-    loop {
-        let submits = pool.get_submits().await?;
-
-        // submits を2つずつに分割
-        for chunk in submits.chunks(2) {
-            let _first = chunk.get(0);
-            let _second = chunk.get(1);
-
-            // submit の情報 (first, second) を Docker::new に渡すべき？
-            let container1 = docker_lib::Docker::new()?;
-            let container2 = docker_lib::Docker::new()?;
-
-            // container1, 2 の実行が終わるのを同時に待つ
-            futures::try_join!(container1, container2)?;
-        }
-
-        delay_for(Duration::from_secs(329329)).await;
+    let mut handles = Vec::new();
+    for _ in 0..JOB_THREADS {
+        let db = Arc::clone(&db_conn);
+        let docker = Arc::clone(&docker_conn);
+        let handle = tokio::spawn(task::gen_job(db, docker));
+        handles.push(handle);
     }
+
+    join_all(handles).await;
+
+    Ok(())
 }
