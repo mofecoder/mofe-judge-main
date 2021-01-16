@@ -1,3 +1,6 @@
+// TODO: 実装が終わったらこのallowディレクティブを削除する
+#![allow(unused)]
+
 use crate::db::DbPool;
 use crate::models::Submit;
 use anyhow::{bail, Result};
