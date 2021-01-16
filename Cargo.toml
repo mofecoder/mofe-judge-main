@@ -17,4 +17,4 @@ tokio = { version = "0.2.4", features = [ "full" ] }
 hyper = "0.14"
 anyhow = "1.0.37"
 async-trait = "0.1.42"
-futures = "0.3.9"
+futures = "0.3.12"
