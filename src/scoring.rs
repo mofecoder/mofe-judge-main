@@ -6,11 +6,12 @@ use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 use std::sync::Arc;
 
+#[allow(unused)]
 pub async fn scoring(db_conn: Arc<DbPool>, submit: Submit) -> Result<i64, Error> {
     if submit.status == "IE".to_string() || submit.status == "CE".to_string() {
         return Ok(0);
     }
-    let db_conn = Arc::clone(&db_conn);
+    let db_conn = Arc::as_ref(&db_conn);
     let testcase_sets: Vec<TestcaseSets> = sqlx::query_as(
         r#"
 SELECT id, points FROM testcase_sets
@@ -29,7 +30,7 @@ WHERE problem_id = ? AND testcase_testcase_sets.deleted IS NULL AND testcases.de
 "#,
     )
     .bind(submit.problem_id)
-    .fetch_all(&pool)
+    .fetch_all(db_conn)
     .await?;
 
     let mut testcase_set_map: HashMap<i64, Vec<i64>> = HashMap::new();
@@ -48,15 +49,13 @@ WHERE problem_id = ? AND testcase_testcase_sets.deleted IS NULL AND testcases.de
     for testcase_set in &testcase_sets {
         let mut is_ac = true;
         for testcase_id in &testcase_set_map[&testcase_set.id] {
-            // TODO
-            // testcase_id, submit.id に対応する TestCaseResult を取得して、ステータスの確認
             let result_status: (String,) = sqlx::query_as(
                 "SELECT status FROM testcase_results
 WHERE submit_id = ? AND testcase_id = ?",
             )
             .bind(submit.id)
             .bind(testcase_id)
-            .fetch_one(&pool)
+            .fetch_one(db_conn)
             .await?;
             if result_status.0 != "AC".to_string() {
                 is_ac = false;
