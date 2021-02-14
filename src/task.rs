@@ -66,10 +66,7 @@ pub async fn gen_job(
         // カッコが続いて見づらくなるので Unit に置き換えて多少見やすくなるようにしている
         type Unit = ();
         const UNIT: () = ();
-        fn mapper(task_result: Result<Unit>) -> Option<(Result<Unit>, Unit)> {
-            Some((task_result, UNIT))
-        }
-        task().map(mapper)
+        task().map(|task_result| Some((task_result, UNIT)))
     })
     .boxed();
 
@@ -157,8 +154,7 @@ impl JudgeTask {
             .lock()
             .unwrap()
             .remove(&req.session_id)
-            .unwrap()
-            .clone();
+            .unwrap();
 
         Ok(cmd_result)
     }

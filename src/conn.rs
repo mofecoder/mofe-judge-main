@@ -55,7 +55,7 @@ async fn handler(
             json_map
                 .lock()
                 .unwrap()
-                .insert(cmd_result.session_id.clone(), cmd_result.clone());
+                .insert(cmd_result.session_id.clone(), cmd_result);
 
             Ok(Response::new(Body::from("ok")))
         }
