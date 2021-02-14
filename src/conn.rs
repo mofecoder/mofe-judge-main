@@ -12,7 +12,7 @@ use std::{
 
 pub async fn server(
     json_map: Arc<Mutex<HashMap<String, CmdResultJSON>>>,
-) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+) -> Result<()> {
     let addr = SocketAddr::from(([127, 0, 0, 1], 8931));
 
     let service = make_service_fn(move |_conn| {
@@ -30,7 +30,7 @@ pub async fn server(
 async fn handler(
     req: Request<Body>,
     json_map: Arc<Mutex<HashMap<String, CmdResultJSON>>>,
-) -> Result<Response<Body>, anyhow::Error> {
+) -> Result<Response<Body>> {
     match (req.method(), req.uri().path()) {
         (&Method::POST, "/cmd-result") => {
             let (_, body) = req.into_parts();
