@@ -2,9 +2,8 @@ use crate::models::*;
 use anyhow::Result;
 use hyper::{
     service::{make_service_fn, service_fn},
-    StatusCode,
+    {Body, Method, Request, Response, Server, StatusCode},
 };
-use hyper::{Body, Method, Request, Response, Server};
 use std::{
     collections::HashMap,
     net::SocketAddr,
@@ -86,6 +85,7 @@ async fn handler(
     }
 }
 
+/* 
 #[cfg(test)]
 mod tests {
     use hyper::{Body, Client, Method, Request};
@@ -146,3 +146,4 @@ mod tests {
         Ok(())
     }
 }
+*/

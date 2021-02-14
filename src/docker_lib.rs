@@ -103,7 +103,7 @@ impl Docker {
         Ok(cmd_result)
     }
 }
-
+/*
 #[cfg(test)]
 mod tests {
     use std::thread::sleep;
@@ -136,3 +136,4 @@ mod tests {
         Ok(())
     }
 }
+*/
