@@ -2,7 +2,7 @@ use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, sqlx::FromRow)]
-pub struct Submits {
+pub struct Submit {
     pub id: i64,
     pub user_id: i32,
     pub problem_id: i64,

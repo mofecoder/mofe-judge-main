@@ -1,12 +1,10 @@
-use dotenv::dotenv;
+use crate::config::Config;
+use anyhow::Result;
 use sqlx::{mysql::MySqlPool, MySql};
-use std::env;
 
-pub async fn new_pool() -> Result<sqlx::Pool<MySql>, sqlx::Error> {
-    dotenv().ok();
-    let url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+pub type DbPool = sqlx::Pool<MySql>;
 
-    let pool = MySqlPool::connect(&url).await?;
-
+pub async fn new_pool(config: &Config) -> Result<DbPool> {
+    let pool = MySqlPool::connect(&config.database_url).await?;
     Ok(pool)
 }
