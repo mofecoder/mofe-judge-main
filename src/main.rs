@@ -1,15 +1,18 @@
 mod config;
+mod conn;
 mod db;
 mod models;
 mod repository;
 mod task;
 mod utils;
-mod conn;
 
 use anyhow::Result;
 use futures::future::join_all;
 use models::CmdResultJSON;
-use std::{collections::HashMap, sync::{Arc, Mutex}};
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
 type JsonMapMutex = Mutex<HashMap<String, CmdResultJSON>>;
 
@@ -24,7 +27,6 @@ async fn main() -> Result<()> {
     let docker_conn = Arc::new(bollard::Docker::connect_with_unix_defaults()?);
     let json_map_mutex = Arc::new(Mutex::new(HashMap::new()));
     tokio::spawn(conn::server(json_map_mutex.clone()));
-    
 
     let mut handles = Vec::new();
     for _ in 0..JOB_THREADS {

@@ -1,9 +1,9 @@
 // TODO: 実装が終わったらこのallowディレクティブを削除する
 #![allow(unused)]
 
-use crate::JsonMapMutex;
 use crate::db::DbPool;
-use crate::models::{Submit, RequestJSON, CmdResultJSON};
+use crate::models::{CmdResultJSON, RequestJSON, Submit};
+use crate::JsonMapMutex;
 use anyhow::{bail, Result};
 use bollard::container::{Config, CreateContainerOptions, RemoveContainerOptions};
 use bollard::models::HostConfig;
@@ -18,7 +18,11 @@ use tokio::time::delay_for;
 // submit が取得できなかったときの次の取得までの間隔
 const INTERVAL: Duration = Duration::from_secs(1);
 
-pub async fn gen_job(db_conn: Arc<DbPool>, docker_conn: Arc<Docker>, json_map_mutex: Arc<JsonMapMutex>) {
+pub async fn gen_job(
+    db_conn: Arc<DbPool>,
+    docker_conn: Arc<Docker>,
+    json_map_mutex: Arc<JsonMapMutex>,
+) {
     // この `task` が 1 実行単位
     let task = || {
         let db_conn = Arc::clone(&db_conn);
@@ -124,8 +128,12 @@ impl JudgeTask {
         Ok((res, ip_addr))
     }
 
-    pub async fn request(&self, ip_addr: &str, req: RequestJSON) -> Result<CmdResultJSON, anyhow::Error> {
-        use hyper::{Request, Method, Body, Client};
+    pub async fn request(
+        &self,
+        ip_addr: &str,
+        req: RequestJSON,
+    ) -> Result<CmdResultJSON, anyhow::Error> {
+        use hyper::{Body, Client, Method, Request};
 
         let payload = serde_json::to_string(&req)?;
 

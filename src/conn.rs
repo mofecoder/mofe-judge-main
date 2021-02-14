@@ -15,25 +15,12 @@ pub async fn server(
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let addr = SocketAddr::from(([127, 0, 0, 1], 8931));
 
-    #[rustfmt::skip]
-    let service 
-        = make_service_fn( move |_conn| {
-                let cln = json_map.clone();
-                async {
-                    Ok::<_, anyhow::Error> ( 
-                        service_fn( 
-                            move |req| {
-                                handler(req, cln.clone())
-                            }
-                        )
-                    )
-                }
-            }
-        );
+    let service = make_service_fn(move |_conn| {
+        let cln = json_map.clone();
+        async { Ok::<_, anyhow::Error>(service_fn(move |req| handler(req, cln.clone()))) }
+    });
 
-    #[rustfmt::skip]
-    let server 
-        = Server::bind(&addr).serve(service);
+    let server = Server::bind(&addr).serve(service);
 
     server.await?;
 
@@ -84,9 +71,7 @@ async fn handler(
     }
 }
 
-
-
-/* 
+/*
 #[cfg(test)]
 mod tests {
     use hyper::{Body, Client, Method, Request};
