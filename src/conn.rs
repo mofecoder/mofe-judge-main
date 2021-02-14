@@ -46,7 +46,6 @@ async fn handler(
 ) -> Result<Response<Body>, anyhow::Error> {
     match (req.method(), req.uri().path()) {
         (&Method::POST, "/cmd-result") => {
-            println!("catch");
             let (_, body) = req.into_parts();
             let body_bytes = hyper::body::to_bytes(body).await?;
 
@@ -84,6 +83,8 @@ async fn handler(
         }
     }
 }
+
+
 
 /* 
 #[cfg(test)]

@@ -1,8 +1,9 @@
 // TODO: 実装が終わったらこのallowディレクティブを削除する
 #![allow(unused)]
 
+use crate::JsonMapMutex;
 use crate::db::DbPool;
-use crate::models::Submit;
+use crate::models::{Submit, RequestJSON, CmdResultJSON};
 use anyhow::{bail, Result};
 use bollard::container::{Config, CreateContainerOptions, RemoveContainerOptions};
 use bollard::models::HostConfig;
@@ -17,13 +18,14 @@ use tokio::time::delay_for;
 // submit が取得できなかったときの次の取得までの間隔
 const INTERVAL: Duration = Duration::from_secs(1);
 
-pub async fn gen_job(db_conn: Arc<DbPool>, docker_conn: Arc<Docker>) {
+pub async fn gen_job(db_conn: Arc<DbPool>, docker_conn: Arc<Docker>, json_map_mutex: Arc<JsonMapMutex>) {
     // この `task` が 1 実行単位
     let task = || {
         let db_conn = Arc::clone(&db_conn);
         let docker_conn = Arc::clone(&docker_conn);
+        let json_map = Arc::clone(&json_map_mutex);
         async move {
-            let task = JudgeTask::new(db_conn, docker_conn);
+            let task = JudgeTask::new(db_conn, docker_conn, json_map);
 
             // 提出を取得
             let submit = match task.fetch_submit().await {
@@ -77,13 +79,15 @@ pub async fn gen_job(db_conn: Arc<DbPool>, docker_conn: Arc<Docker>) {
 struct JudgeTask {
     db_conn: Arc<DbPool>,
     docker_conn: Arc<Docker>,
+    json_map: Arc<JsonMapMutex>,
 }
 
 impl JudgeTask {
-    fn new(db_conn: Arc<DbPool>, docker_conn: Arc<Docker>) -> Self {
+    fn new(db_conn: Arc<DbPool>, docker_conn: Arc<Docker>, json_map: Arc<JsonMapMutex>) -> Self {
         Self {
             db_conn,
             docker_conn,
+            json_map,
         }
     }
 
@@ -118,6 +122,37 @@ impl JudgeTask {
 
         let res = self.docker_conn.create_container(options, config).await?;
         Ok((res, ip_addr))
+    }
+
+    pub async fn request(&self, ip_addr: &str, req: RequestJSON) -> Result<CmdResultJSON, anyhow::Error> {
+        use hyper::{Request, Method, Body, Client};
+
+        let payload = serde_json::to_string(&req)?;
+
+        let request = Request::builder()
+            .method(Method::POST)
+            .uri(format!("http://{}:8080/request", &ip_addr))
+            .body(Body::from(payload))?;
+
+        let cli = Client::new();
+        let resp = cli.request(request).await?;
+
+        loop {
+            let mp = self.json_map.lock().unwrap();
+            if mp.get(&req.session_id).is_some() {
+                break;
+            }
+        }
+
+        let cmd_result: CmdResultJSON = self
+            .json_map
+            .lock()
+            .unwrap()
+            .remove(&req.session_id)
+            .unwrap()
+            .clone();
+
+        Ok(cmd_result)
     }
 
     /// ジャッジの進捗をDBに保存する
