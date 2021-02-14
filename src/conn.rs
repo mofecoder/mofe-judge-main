@@ -10,9 +10,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-pub async fn server(
-    json_map: Arc<Mutex<HashMap<String, CmdResultJSON>>>,
-) -> Result<()> {
+pub async fn server(json_map: Arc<Mutex<HashMap<String, CmdResultJSON>>>) -> Result<()> {
     let addr = SocketAddr::from(([127, 0, 0, 1], 8931));
 
     let service = make_service_fn(move |_conn| {
