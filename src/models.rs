@@ -50,7 +50,7 @@ pub struct Submits {
 
 /*
 #[derive(Insertable)]
-p#[table_name="submits"]
+#[table_name="submits"]
 pub struct NewSubmits {
     pub status: String,
     pub point: Option<i32>,
