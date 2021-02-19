@@ -23,7 +23,7 @@ pub struct TestcaseSets {
     pub point: i32,
 }
 
-#[derive(Debug, sqlx::FromRow, PartialEq, Eq, Hash)]
+#[derive(Debug, sqlx::FromRow)]
 pub struct TestcaseTestcaseSets {
     pub testcase_id: i64,
     pub testcase_set_id: i64,
