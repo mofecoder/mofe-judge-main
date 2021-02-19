@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 #[allow(unused)]
 pub async fn scoring(db_conn: Arc<DbPool>, submit: Submit) -> Result<i64, Error> {
-    if submit.status == "IE".to_string() || submit.status == "CE".to_string() {
+    if submit.status == *"IE" || submit.status == *"CE" {
         return Ok(0);
     }
     let db_conn = Arc::as_ref(&db_conn);
@@ -57,7 +57,7 @@ WHERE submit_id = ? AND testcase_id = ?",
             .bind(testcase_id)
             .fetch_one(db_conn)
             .await?;
-            if result_status.0 != "AC".to_string() {
+            if result_status.0 != *"AC" {
                 is_ac = false;
                 break;
             }
