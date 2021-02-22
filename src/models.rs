@@ -1,4 +1,5 @@
 use chrono::NaiveDateTime;
+use std::collections::HashMap;
 
 #[derive(Debug, sqlx::FromRow)]
 pub struct Submit {
@@ -27,6 +28,27 @@ pub struct TestcaseSets {
 pub struct TestcaseTestcaseSets {
     pub testcase_id: i64,
     pub testcase_set_id: i64,
+}
+
+#[derive(Debug)]
+pub struct SubmissionResult {
+    pub status: String,
+    pub execution_time: Option<i32>,
+    pub execution_memory: Option<i32>,
+    pub point: i32,
+    pub compile_error: String,
+    pub testcase_result_map: HashMap<i64, TestCaseResult>,
+}
+
+#[derive(Debug)]
+pub struct TestCaseResult {
+    pub submit_id: i64,
+    pub test_case_id: i64,
+    pub status: String,
+    pub execution_time: Option<i32>,
+    pub execution_memory: Option<i32>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 }
 
 /*

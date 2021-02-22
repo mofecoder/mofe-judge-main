@@ -1,5 +1,5 @@
 use crate::db::DbPool;
-use crate::models::{Submit, TestcaseSets, TestcaseTestcaseSets};
+use crate::models::{SubmissionResult, Submit, TestcaseSets, TestcaseTestcaseSets};
 
 use anyhow::Error;
 use std::collections::hash_map::Entry;
@@ -7,8 +7,12 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 #[allow(unused)]
-pub async fn scoring(db_conn: Arc<DbPool>, submit: Submit) -> Result<i64, Error> {
-    if submit.status == *"IE" || submit.status == *"CE" {
+pub async fn scoring(
+    db_conn: Arc<DbPool>,
+    submit: Submit,
+    submit_res: SubmissionResult,
+) -> Result<i64, Error> {
+    if submit_res.status == *"IE" || submit_res.status == *"CE" {
         return Ok(0);
     }
     let db_conn = Arc::as_ref(&db_conn);
@@ -49,15 +53,7 @@ WHERE problem_id = ? AND testcase_testcase_sets.deleted IS NULL AND testcases.de
     for testcase_set in &testcase_sets {
         let mut is_ac = true;
         for testcase_id in &testcase_set_map[&testcase_set.id] {
-            let result_status: (String,) = sqlx::query_as(
-                "SELECT status FROM testcase_results
-WHERE submit_id = ? AND testcase_id = ?",
-            )
-            .bind(submit.id)
-            .bind(testcase_id)
-            .fetch_one(db_conn)
-            .await?;
-            if result_status.0 != *"AC" {
+            if submit_res.testcase_result_map[testcase_id].status != *"AC" {
                 is_ac = false;
                 break;
             }
