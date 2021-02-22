@@ -43,7 +43,7 @@ pub struct SubmissionResult {
 #[derive(Debug)]
 pub struct TestCaseResult {
     pub submit_id: i64,
-    pub test_case_id: i64,
+    pub testcase_id: i64,
     pub status: String,
     pub execution_time: Option<i32>,
     pub execution_memory: Option<i32>,
