@@ -7,13 +7,12 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-sqlx = { version = "0.4.2", features = [ "runtime-tokio-rustls", "mysql", "macros", "chrono" ] }
+sqlx = { version = "0.5.1", features = [ "runtime-tokio-rustls", "mysql", "macros", "chrono" ] }
 dotenv = "0.15.0"
 chrono = "0.4"
 bollard = "0.9"
 rand = "0.8.0"
-# TODO(magurotuna): Upgrade tokio to v1 after sqlx gets compatible with that
-tokio = { version = "0.2.4", features = [ "full" ] }
+tokio = { version = "1.2.0", features = [ "full" ] }
 hyper = "0.14"
 anyhow = "1.0.37"
 async-trait = "0.1.42"
