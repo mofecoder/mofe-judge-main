@@ -12,7 +12,7 @@ use futures::future::FutureExt;
 use futures::stream::{self, StreamExt};
 use std::sync::Arc;
 use std::time::Duration;
-use tokio::time::delay_for;
+use tokio::time::sleep;
 
 // submit が取得できなかったときの次の取得までの間隔
 const INTERVAL: Duration = Duration::from_secs(1);
@@ -30,7 +30,7 @@ pub async fn gen_job(db_conn: Arc<DbPool>, docker_conn: Arc<Docker>) {
                 Ok(s) => s,
                 Err(_) => {
                     // TODO(magurotuna): 提出が取得できなかった場合は 1 秒待って次の実行に移る
-                    delay_for(INTERVAL).await;
+                    sleep(INTERVAL).await;
                     bail!("Couldn't find an unjudged submit.");
                 }
             };
@@ -60,10 +60,8 @@ pub async fn gen_job(db_conn: Arc<DbPool>, docker_conn: Arc<Docker>) {
         // カッコが続いて見づらくなるので Unit に置き換えて多少見やすくなるようにしている
         type Unit = ();
         const UNIT: () = ();
-        fn mapper(task_result: Result<Unit>) -> Option<(Result<Unit>, Unit)> {
-            Some((task_result, UNIT))
-        }
-        task().map(mapper)
+
+        task().map(|task_result| Some((task_result, UNIT)))
     })
     .boxed();
 
