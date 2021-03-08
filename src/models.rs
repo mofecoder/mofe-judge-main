@@ -9,6 +9,7 @@ pub struct JudgeRequest {
     pub testcases: Vec<Testcase>, // pub testcase: Testcase,
     pub problem: Problem,         // pub problem: Problem,
 }
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Testcase {
     pub testcase_id: i64,
@@ -20,13 +21,17 @@ pub struct Problem {
     pub problem_id: i64,
     pub uuid: String,
 }
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct JudgeResponse(Vec<TestcaseResult>);
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct TestcaseResult {
     pub status: Status,
     pub cmd_result: CmdResult,
 }
+
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum Status {
     AC,
@@ -38,6 +43,7 @@ pub enum Status {
     CE,
     IE,
 }
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct CmdResult {
     pub time: i32,          // ms
@@ -52,6 +58,7 @@ pub struct CompileRequest {
     pub submit_id: i64,
     pub cmd: String, // コンパイルコマンド or 実行コマンド
 }
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CompileResponse {
     pub time: i32,          // ms
