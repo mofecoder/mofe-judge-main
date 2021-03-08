@@ -2,7 +2,7 @@ use crate::{
     db::DbPool,
     entities,
     lang_cmd::{generate_lang_cmd_map, Command},
-    models::{CmdResultJson, Problem, RequestJson, Testcase},
+    models::{CompileRequest, CompileResponse, JudgeRequest, JudgeResponse, Problem, Testcase},
     repository::{ProblemsRepository, SubmitRepository, TestcasesRepository},
     utils,
 };
@@ -99,8 +99,18 @@ async fn execute_task(
 
     let req = generate_judge_request(submit.id, &command.run, problem, testcases);
 
-    let _compile_response = task.request_compile(&ip_addr, &req).await?;
-    // TODO compile完了後の処理
+    let compile_response = task
+        .request_compile(
+            &ip_addr,
+            &CompileRequest {
+                submit_id: submit.id,
+                cmd: command.compile.clone(),
+            },
+        )
+        .await?;
+    if !compile_response.ok {
+        return Err(anyhow::anyhow!("Compile failed"));
+    }
 
     let _judge_response = task.request_judge(&ip_addr, &req).await?;
     // TODO judgeレスポンスによる処理
@@ -115,7 +125,7 @@ fn generate_judge_request(
     cmd: &str,
     problem: entities::Problem,
     testcases: Vec<entities::Testcase>,
-) -> RequestJson {
+) -> JudgeRequest {
     let request_testcases = testcases
         .iter()
         .map(|t| Testcase {
@@ -127,7 +137,7 @@ fn generate_judge_request(
         problem_id: problem.id,
         uuid: problem.uuid.unwrap_or_default(),
     };
-    RequestJson {
+    JudgeRequest {
         submit_id,
         cmd: cmd.to_string(),
         time_limit: 0,
@@ -203,8 +213,8 @@ impl JudgeTask {
     pub async fn request_compile(
         &self,
         ip_addr: &str,
-        req: &RequestJson,
-    ) -> Result<CmdResultJson, anyhow::Error> {
+        req: &CompileRequest,
+    ) -> Result<CompileResponse, anyhow::Error> {
         let resp = self
             .http_client
             .post(&format!("http://{}:8080/compile", &ip_addr))
@@ -219,8 +229,8 @@ impl JudgeTask {
     pub async fn request_judge(
         &self,
         ip_addr: &str,
-        req: &RequestJson,
-    ) -> Result<CmdResultJson, anyhow::Error> {
+        req: &JudgeRequest,
+    ) -> Result<JudgeResponse, anyhow::Error> {
         let resp = self
             .http_client
             .post(&format!("http://{}:8080/judge", &ip_addr))
