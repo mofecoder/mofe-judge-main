@@ -183,10 +183,8 @@ impl JudgeTask {
 
     /// Docker コンテナを指定された名前で立ち上げる
     async fn create_container(&self, name: &str) -> Result<(ContainerCreateResponse, String)> {
-        //const IMAGE: &str = "cafecoder";
-        const IMAGE: &str = "mysql";
+        const IMAGE: &str = "cafecoder";
         let options = Some(CreateContainerOptions { name });
-        println!("create container ");
         let config = Config {
             image: Some(IMAGE),
             host_config: Some(HostConfig {
@@ -247,7 +245,6 @@ impl JudgeTask {
             force: true,
             ..Default::default()
         };
-        dbg!("remove ", options);
         self.docker_conn
             .remove_container(name, Some(options))
             .await?;
