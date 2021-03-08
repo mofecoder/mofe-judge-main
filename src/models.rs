@@ -1,38 +1,17 @@
-use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, sqlx::FromRow)]
-pub struct Submit {
-    pub id: i64,
-    pub user_id: i32,
-    pub problem_id: i64,
-    pub path: String,
-    pub status: String,
-    pub point: Option<i32>,
-    pub execution_time: Option<i32>,
-    pub execution_memory: Option<i32>,
-    pub compile_error: Option<String>,
-    pub lang: String,
-    pub created_at: NaiveDateTime,
-    pub updated_at: NaiveDateTime,
-    pub deleted_at: Option<NaiveDateTime>,
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct RequestJson {
+    pub submit_id: i64,
+    pub cmd: String,              // コンパイルコマンド or 実行コマンド
+    pub time_limit: i32,          // 実行制限時間
+    pub mem_limit: i32,           // メモリ制限
+    pub testcases: Vec<Testcase>, // pub testcase: Testcase,
+    pub problem: Problem,         // pub problem: Problem,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct RequestJSON {
-    pub session_id: String,
-    pub mode: String,    // "judge", "compile", "download"
-    pub command: String, // compile_cmd, execute_cmd
-    pub problem_id: String,
-    pub code_path: String,
-    pub filename: String,
-    pub time_limit: usize,
-    pub testcase: Testcase,
-    pub problem: Problem,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct CmdResultJSON {
+pub struct CmdResultJson {
     pub session_id: String,
     pub time: usize,
     pub result: bool,
@@ -54,13 +33,13 @@ pub struct TestcaseResult {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Testcase {
-    pub testcase_id: usize,
+    pub testcase_id: i64,
     pub name: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Problem {
-    pub problem_id: usize,
+    pub problem_id: i64,
     pub uuid: String,
 }
 
