@@ -31,7 +31,6 @@ pub struct TestcaseResult {
     pub cmd_result: CmdResult,
 }
 
-#[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum Status {
     AC,
