@@ -6,6 +6,10 @@ edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+
+[features]
+db_test = []
+
 [dependencies]
 sqlx = { version = "0.5.1", features = [ "runtime-tokio-rustls", "mysql", "macros", "chrono", "offline"] }
 dotenv = "0.15.0"
