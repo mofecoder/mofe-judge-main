@@ -12,7 +12,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         "c17_gcc:10.2.0".to_string(), //C17
         Command {
             compile: "gcc-10 Main.c -O2 -lm -std=gnu17 -o Main.out 2> userStderr.txt".to_string(),
-            run: "./Main.out < testmap.insert(.txt > userStdout.txt 2> userStderr.txt".to_string(),
+            run: "./Main.out < testcase.txt > userStdout.txt 2> userStderr.txt".to_string(),
             file_name: "Main.c".to_string(),
         },
     );
@@ -21,7 +21,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         Command {
             compile: "g++-10 Main.cpp -O2 -lm -std=gnu++17 -o Main.out 2> userStderr.txt"
                 .to_string(),
-            run: "./Main.out < testmap.insert(.txt > userStdout.txt 2> userStderr.txt".to_string(),
+            run: "./Main.out < testcase.txt > userStdout.txt 2> userStderr.txt".to_string(),
             file_name: "Main.cpp".to_string(),
         },
     );
@@ -30,7 +30,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         Command {
             compile: "g++-10 Main.cpp -O2 -lm -std=gnu++17 -I . -o Main.out 2> userStderr.txt"
                 .to_string(),
-            run: "./Main.out < testmap.insert(.txt > userStdout.txt 2> userStderr.txt".to_string(),
+            run: "./Main.out < testcase.txt > userStdout.txt 2> userStderr.txt".to_string(),
             file_name: "Main.cpp".to_string(),
         },
     );
@@ -39,7 +39,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         Command {
             compile: "g++-10 Main.cpp -O2 -lm -std=gnu++2a -o Main.out 2> userStderr.txt"
                 .to_string(),
-            run: "./Main.out < testmap.insert(.txt > userStdout.txt 2> userStderr.txt".to_string(),
+            run: "./Main.out < testcase.txt > userStdout.txt 2> userStderr.txt".to_string(),
             file_name: "Main.cpp".to_string(),
         },
     );
@@ -47,7 +47,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         "java:11.0.9".to_string(), //java11
         Command {
             compile: "javac -encoding UTF-8 Main.java 2> userStderr.txt".to_string(),
-            run: "java Main < testmap.insert(.txt > userStdout.txt 2> userStderr.txt".to_string(),
+            run: "java Main < testcase.txt > userStdout.txt 2> userStderr.txt".to_string(),
             file_name: "Main.java".to_string(),
         },
     );
@@ -55,8 +55,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         "python:3.9.0".to_string(), //python3
         Command {
             compile: "python3.9 -m py_compile Main.py 2> userStderr.txt".to_string(),
-            run: "python3.9 Main.py < testmap.insert(.txt > userStdout.txt 2> userStderr.txt"
-                .to_string(),
+            run: "python3.9 Main.py < testcase.txt > userStdout.txt 2> userStderr.txt".to_string(),
             file_name: "Main.py".to_string(),
         },
     );
@@ -64,57 +63,56 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         "pypy3:7.3.3".to_string(), //pypy3
         Command {
             compile: "pypy3 -m py_compile Main.py 2> userStderr.txt".to_string(),
-            run: "pypy3 Main.py < testmap.insert(.txt > userStdout.txt 2> userStderr.txt"
-                .to_string(),
+            run: "pypy3 Main.py < testcase.txt > userStdout.txt 2> userStderr.txt".to_string(),
             file_name: "Main.py".to_string(),
         },
     );
     map.insert( "cs_mono:6.12.0.90".to_string(), //C#
         Command {
             compile: "source ~/.profile && mcs Main.cs -out:Main.exe 2> userStderr.txt".to_string(),
-            run: "source ~/.profile && mono Main.exe < testmap.insert(.txt > userStdout.txt 2> userStderr.txt".to_string(),
+            run: "source ~/.profile && mono Main.exe < testcase.txt > userStdout.txt 2> userStderr.txt".to_string(),
             file_name: "Main.cs".to_string(), 
         },
     );
     map.insert( "cs_dotnet:5.0".to_string(), // C#
         Command {
             compile: "source ~/.profile && cd Main && dotnet new console && mv ./../Main.cs Program.cs && dotnet publish -c Release --nologo -v q -o . 2> ../userStderr.txt && cd /".to_string(),
-            run: "source ~/.profile && dotnet ./Main/Main.dll < testmap.insert(.txt > userStdout.txt 2> userStderr.txt".to_string(),
+            run: "source ~/.profile && dotnet ./Main/Main.dll < testcase.txt > userStdout.txt 2> userStderr.txt".to_string(),
             file_name: "Main.cs".to_string(),
         },
     );
     map.insert( "go:1.15.5".to_string(), //golang
         Command {
             compile: "source ~/.profile && mv Main.go Main && cd Main && go build Main.go 2> ../userStderr.txt".to_string(),
-            run: "./Main/Main < testmap.insert(.txt > userStdout.txt 2> userStderr.txt".to_string(),
+            run: "./Main/Main < testcase.txt > userStdout.txt 2> userStderr.txt".to_string(),
             file_name: "Main.go".to_string(),
         },
     );
     map.insert( "nim:1.4.0".to_string(),
         Command {
             compile: "source ~/.profile && nim cpp -d:release --opt:speed --multimethods:on -o:Main.out Main.nim 2> userStderr.txt".to_string(),
-            run: "./Main.out < testmap.insert(.txt > userStdout.txt 2> userStderr.txt".to_string(),
+            run: "./Main.out < testcase.txt > userStdout.txt 2> userStderr.txt".to_string(),
             file_name: "Main.nim".to_string(),
         },
     );
     map.insert( "rust:1.48.0".to_string(),
         Command {
             compile: "source ~/.profile && cd rust_workspace && mv /Main.rs ./src/main.rs && cargo build --release 2> /userStderr.txt && cd /".to_string(),
-            run: "./rust_workspace/target/release/Rust < testmap.insert(.txt > userStdout.txt 2> userStderr.txt".to_string(),
+            run: "./rust_workspace/target/release/Rust < testcase.txt > userStdout.txt 2> userStderr.txt".to_string(),
             file_name: "Main.rs".to_string(), 
         },
     );
     map.insert( "ruby:2.7.2".to_string(),
         Command {
             compile: "source ~/.profile && ruby -w -c ./Main.rb 2> userStderr.txt".to_string(),
-            run: "source ~/.profile && ruby ./Main.rb < testmap.insert(.txt > userStdout.txt 2> userStderr.txt".to_string(),
+            run: "source ~/.profile && ruby ./Main.rb < testcase.txt > userStdout.txt 2> userStderr.txt".to_string(),
             file_name: "Main.rb".to_string(),
         },
     );
     map.insert( "kotlin:1.4.10".to_string(),
         Command {
             compile: "source ~/.profile && kotlinc ./Main.kt -include-runtime -d Main.jar 2> userStderr.txt".to_string(),
-            run: "source ~/.profile && kotlin Main.jar < testmap.insert(.txt > userStdout.txt 2> userStderr.txt".to_string(),
+            run: "source ~/.profile && kotlin Main.jar < testcase.txt > userStdout.txt 2> userStderr.txt".to_string(),
             file_name: "Main.kt".to_string(),
         },
     );
@@ -122,7 +120,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         "fortran:10.2.0".to_string(),
         Command {
             compile: "gfortran-10 -O2 Main.f90 -o Main.out 2> userStderr.txt".to_string(),
-            run: "./Main.out < testmap.insert(.txt > userStdout.txt 2> userStderr.txt".to_string(),
+            run: "./Main.out < testcase.txt > userStdout.txt 2> userStderr.txt".to_string(),
             file_name: "Main.f90".to_string(),
         },
     );
@@ -130,15 +128,14 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         "perl:5.30.0".to_string(),
         Command {
             compile: "perl -c Main.pl 2> userStderr.txt".to_string(),
-            run: "perl Main.pl < testmap.insert(.txt > userStdout.txt 2> userStderr.txt"
-                .to_string(),
+            run: "perl Main.pl < testcase.txt > userStdout.txt 2> userStderr.txt".to_string(),
             file_name: "Main.pl".to_string(),
         },
     );
     map.insert( "raku:2020.10".to_string(),
         Command {
             compile: "source ~/.profile && perl6 -c Main.p6 2> userStderr.txt".to_string(),
-            run: "source ~/.profile && perl6 Main.p6 < testmap.insert(.txt > userStdout.txt 2> userStderr.txt".to_string(),
+            run: "source ~/.profile && perl6 Main.p6 < testcase.txt > userStdout.txt 2> userStderr.txt".to_string(),
             file_name: "Main.p6".to_string(),
         },
     );
@@ -146,7 +143,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         "crystal:0.35.1".to_string(),
         Command {
             compile: "crystal build Main.cr -o Main.out 2> userStderr.txt".to_string(),
-            run: "./Main.out < testmap.insert(.txt > userStdout.txt 2> userStderr.txt".to_string(),
+            run: "./Main.out < testcase.txt > userStdout.txt 2> userStderr.txt".to_string(),
             file_name: "Main.cr".to_string(),
         },
     );
@@ -162,8 +159,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         "bash:5.0.17".to_string(),
         Command {
             compile: "bash -n Main.sh 2> userStderr.txt".to_string(),
-            run: "bash Main.sh < testmap.insert(.txt > userStdout.txt 2> userStderr.txt"
-                .to_string(),
+            run: "bash Main.sh < testcase.txt > userStdout.txt 2> userStderr.txt".to_string(),
             file_name: "Main.sh".to_string(),
         },
     );
