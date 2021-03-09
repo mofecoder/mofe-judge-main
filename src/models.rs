@@ -1,5 +1,26 @@
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CompileRequest {
+    pub submit_id: i64,
+    pub cmd: String, // コンパイルコマンド or 実行コマンド
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CompileResponse {
+    pub time: i32,          // ms
+    pub stdout_size: usize, // byte
+    pub mem_usage: i32,     // byte
+    pub ok: bool,           // exit_code == 0
+    pub message: String,    // コンパイルメッセージ
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DownloadRequest {
+    pub submit_id: i64,
+    pub code_path: String, // gcp 上のパス
+    pub filename: String,  // Main.ext
+}
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct JudgeRequest {
     pub submit_id: i64,
@@ -45,21 +66,6 @@ pub enum Status {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct CmdResult {
-    pub time: i32,          // ms
-    pub stdout_size: usize, // byte
-    pub mem_usage: i32,     // byte
-    pub ok: bool,           // exit_code == 0
-    pub message: String,    // コンパイルメッセージ
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CompileRequest {
-    pub submit_id: i64,
-    pub cmd: String, // コンパイルコマンド or 実行コマンド
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CompileResponse {
     pub time: i32,          // ms
     pub stdout_size: usize, // byte
     pub mem_usage: i32,     // byte

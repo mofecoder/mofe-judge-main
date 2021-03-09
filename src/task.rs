@@ -2,7 +2,10 @@ use crate::{
     db::DbPool,
     entities,
     lang_cmd::{generate_lang_cmd_map, Command},
-    models::{CompileRequest, CompileResponse, JudgeRequest, JudgeResponse, Problem, Testcase},
+    models::{
+        CompileRequest, CompileResponse, DownloadRequest, JudgeRequest, JudgeResponse, Problem,
+        Testcase,
+    },
     repository::{ProblemsRepository, SubmitRepository, TestcasesRepository},
     utils,
 };
@@ -18,7 +21,7 @@ use futures::{
     stream::{self, StreamExt},
 };
 use once_cell::sync::Lazy;
-use reqwest::Client;
+use reqwest::{Client, Response};
 use std::{collections::HashMap, sync::Arc, time::Duration};
 use tokio::time::sleep;
 // submit が取得できなかったときの次の取得までの間隔
@@ -111,6 +114,17 @@ async fn execute_task(
     if !compile_response.ok {
         return Err(anyhow::anyhow!("Compile failed"));
     }
+
+    let _download_response = task
+        .request_download(
+            &ip_addr,
+            &DownloadRequest {
+                submit_id: submit.id,
+                code_path: submit.path.clone(),
+                filename: command.file_name.clone(),
+            },
+        )
+        .await?;
 
     let _judge_response = task.request_judge(&ip_addr, &req).await?;
     // TODO judgeレスポンスによる処理
@@ -220,6 +234,21 @@ impl JudgeTask {
             .send()
             .await?
             .json()
+            .await?;
+
+        Ok(resp)
+    }
+
+    pub async fn request_download(
+        &self,
+        ip_addr: &str,
+        req: &DownloadRequest,
+    ) -> Result<Response, anyhow::Error> {
+        let resp = self
+            .http_client
+            .post(&format!("http://{}:8080/dwonload", &ip_addr))
+            .json(&req)
+            .send()
             .await?;
 
         Ok(resp)
