@@ -1,7 +1,8 @@
 use crate::{
+    config::ENV_CONFIG,
     db::DbPool,
     entities,
-    lang_cmd::{generate_lang_cmd_map, Command},
+    lang_cmd::LANG_CMD,
     models::{
         CompileRequest, CompileResponse, DownloadRequest, JudgeRequest, JudgeResponse, Problem,
         Testcase,
@@ -9,9 +10,10 @@ use crate::{
     repository::{ProblemsRepository, SubmitRepository, TestcasesRepository},
     utils,
 };
+
 use anyhow::{bail, Result};
 use bollard::{
-    container::{Config, CreateContainerOptions, RemoveContainerOptions},
+    container::{Config, CreateContainerOptions, RemoveContainerOptions, StartContainerOptions},
     models::HostConfig,
     service::ContainerCreateResponse,
     Docker,
@@ -20,13 +22,11 @@ use futures::{
     future::FutureExt,
     stream::{self, StreamExt},
 };
-use once_cell::sync::Lazy;
-use reqwest::{Client, Response};
-use std::{collections::HashMap, sync::Arc, time::Duration};
+use reqwest::{Client, Response, StatusCode};
+use std::{sync::Arc, time::Duration};
 use tokio::time::sleep;
 // submit が取得できなかったときの次の取得までの間隔
 const INTERVAL: Duration = Duration::from_secs(1);
-static LANG_CMD: Lazy<HashMap<String, Command>> = Lazy::new(generate_lang_cmd_map);
 
 pub async fn gen_job(db_conn: Arc<DbPool>, docker_conn: Arc<Docker>, http_client: Client) {
     // この `task` が 1 実行単位
@@ -114,8 +114,7 @@ async fn execute_task(
     if !compile_response.ok {
         return Err(anyhow::anyhow!("Compile failed"));
     }
-
-    let _download_response = task
+    let download_response = task
         .request_download(
             &ip_addr,
             &DownloadRequest {
@@ -126,9 +125,12 @@ async fn execute_task(
         )
         .await?;
 
+    if download_response.status() != StatusCode::OK {
+        return Err(anyhow::anyhow!("Download failed"));
+    }
+
     let _judge_response = task.request_judge(&ip_addr, &req).await?;
     // TODO judgeレスポンスによる処理
-
     // コンテナを削除
     task.remove_container(&container_name).await?;
 
@@ -197,7 +199,7 @@ impl JudgeTask {
 
     /// Docker コンテナを指定された名前で立ち上げる
     async fn create_container(&self, name: &str) -> Result<(ContainerCreateResponse, String)> {
-        const IMAGE: &str = "cafecoder";
+        const IMAGE: &str = "cafecoder-rs-stab";
         let options = Some(CreateContainerOptions { name });
         let config = Config {
             image: Some(IMAGE),
@@ -210,6 +212,9 @@ impl JudgeTask {
         };
         let res = self.docker_conn.create_container(options, config).await?;
 
+        self.docker_conn
+            .start_container(name, None::<StartContainerOptions<String>>)
+            .await?;
         let inspect = self.docker_conn.inspect_container(name, None).await?;
 
         let network_settings = inspect
@@ -218,7 +223,6 @@ impl JudgeTask {
         let ip_addr = network_settings
             .ip_address
             .expect("couldn't get IP address");
-
         Ok((res, ip_addr))
     }
 
@@ -229,7 +233,10 @@ impl JudgeTask {
     ) -> Result<CompileResponse, anyhow::Error> {
         let resp = self
             .http_client
-            .post(&format!("http://{}:8080/compile", &ip_addr))
+            .post(&format!(
+                "http://{}:{}/compile",
+                &ip_addr, &ENV_CONFIG.judge_container_port
+            ))
             .json(&req)
             .send()
             .await?
@@ -246,7 +253,10 @@ impl JudgeTask {
     ) -> Result<Response, anyhow::Error> {
         let resp = self
             .http_client
-            .post(&format!("http://{}:8080/dwonload", &ip_addr))
+            .post(&format!(
+                "http://{}:{}/download",
+                &ip_addr, &ENV_CONFIG.judge_container_port
+            ))
             .json(&req)
             .send()
             .await?;
@@ -260,7 +270,10 @@ impl JudgeTask {
     ) -> Result<JudgeResponse, anyhow::Error> {
         let resp = self
             .http_client
-            .post(&format!("http://{}:8080/judge", &ip_addr))
+            .post(&format!(
+                "http://{}:{}/judge",
+                &ip_addr, &ENV_CONFIG.judge_container_port
+            ))
             .json(&req)
             .send()
             .await?;
