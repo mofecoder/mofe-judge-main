@@ -1,4 +1,8 @@
 use std::collections::HashMap;
+
+use once_cell::sync::Lazy;
+
+pub static LANG_CMD: Lazy<HashMap<String, Command>> = Lazy::new(generate_lang_cmd_map);
 #[derive(Debug)]
 pub struct Command {
     pub compile: String,
