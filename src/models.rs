@@ -1,5 +1,8 @@
 use chrono::NaiveDateTime;
 
+#[path = "./../cafecoder-docker-rs/src/models.rs"]
+pub mod container;
+
 #[derive(Debug, sqlx::FromRow)]
 pub struct Submit {
     pub id: i64,
