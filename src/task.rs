@@ -199,7 +199,7 @@ impl JudgeTask {
 
     /// Docker コンテナを指定された名前で立ち上げる
     async fn create_container(&self, name: &str) -> Result<(ContainerCreateResponse, String)> {
-        const IMAGE: &str = "cafecoder-rs-stab";
+        const IMAGE: &str = "cafecoder";
         let options = Some(CreateContainerOptions { name });
         let config = Config {
             image: Some(IMAGE),
