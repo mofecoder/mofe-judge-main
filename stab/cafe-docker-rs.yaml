@@ -1,0 +1,74 @@
+openapi: 3.0.0
+info:
+  title: cafe docker API
+  version: 1.0.0
+paths:
+  /compile:
+    post:
+      responses:
+        "200":
+          description: "compile operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompileResponse"
+  /download:
+    post:
+      responses:
+        "200":
+          description: "download operation"
+  /judge:
+    post:
+      responses:
+        "200":
+          description: "judge operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JudgeResponse"
+components:
+  schemas:
+    CompileResponse:
+      type: object
+      properties:
+        time:
+          type: integer
+          example: 0
+        stdout_size:
+          type: integer
+          example: 0
+        mem_usage:
+          type: integer
+          example: 0
+        ok:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: sample message
+    JudgeResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          status:
+            type: string
+            example: AC
+          cmd_result:
+            type: object
+            properties:
+              time:
+                type: integer
+                example: 0
+              stdout_size:
+                type: integer
+                example: 0
+              mem_usage:
+                type: integer
+                example: 0
+              ok:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: sample message
