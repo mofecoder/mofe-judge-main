@@ -6,15 +6,22 @@ edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+
+[features]
+db_test = []
+
 [dependencies]
-sqlx = { version = "0.5.1", features = ["runtime-tokio-rustls", "mysql", "macros", "chrono"] }
+sqlx = { version = "0.5.1", features = [ "runtime-tokio-rustls", "mysql", "macros", "chrono", "offline"] }
 dotenv = "0.15.0"
 chrono = "0.4"
-bollard = "0.9"
+bollard = "0.10.1"
 rand = "0.8.0"
 tokio = { version = "1.2.0", features = ["full"] }
-hyper = "0.14"
 anyhow = "1.0.37"
 async-trait = "0.1.42"
 futures = "0.3.12"
 serde = { version = "1.0", features = ["derive"] }
+hyper = { version = "0.14", features = [ "full" ] }
+serde_json = "1.0"
+reqwest = { version = "0.11", features = ["json"] }
+once_cell = "1.7.2"
