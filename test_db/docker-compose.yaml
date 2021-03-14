@@ -8,8 +8,8 @@ services:
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_USER=earlgray
-      - MYSQL_PASSWORD=329issocute
+      - MYSQL_USER=
+      - MYSQL_PASSWORD=
 
   adminer:
     image: adminer

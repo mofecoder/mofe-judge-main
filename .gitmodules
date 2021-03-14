@@ -1,3 +1,3 @@
 [submodule "cafecoder-docker-rs"]
 	path = cafecoder-docker-rs
-	url = git@github.com:cafecoder-dev/cafecoder-docker-rs.git
+	url = https://github.com/cafecoder-dev/cafecoder-docker-rs.git
