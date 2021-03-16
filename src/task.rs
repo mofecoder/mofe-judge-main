@@ -3,7 +3,7 @@ use crate::{
     db::DbPool,
     entities,
     lang_cmd::LANG_CMD,
-    models::{
+    models::container::{
         CompileRequest, CompileResponse, DownloadRequest, JudgeRequest, JudgeResponse, Problem,
         Testcase,
     },
@@ -111,7 +111,7 @@ async fn execute_task(
             },
         )
         .await?;
-    if !compile_response.ok {
+    if !compile_response.0.ok {
         return Err(anyhow::anyhow!("Compile failed"));
     }
     let download_response = task
