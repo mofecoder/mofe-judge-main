@@ -15,8 +15,11 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
     map.insert(
         "c17_gcc:10.2.0".to_string(), //C17
         Command {
-            compile: "gcc-10 Main.c -O2 -lm -std=gnu17 -o Main.out 2> /judge/userStderr.txt".to_string(),
-            run: "./Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
+            compile: "gcc-10 Main.c -O2 -lm -std=gnu17 -o Main.out 2> /judge/userStderr.txt"
+                .to_string(),
+            run:
+                "./Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
+                    .to_string(),
             file_name: "Main.c".to_string(),
         },
     );
@@ -25,16 +28,21 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         Command {
             compile: "g++-10 Main.cpp -O2 -lm -std=gnu++17 -o Main.out 2> /judge/userStderr.txt"
                 .to_string(),
-            run: "./Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
+            run:
+                "./Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
+                    .to_string(),
             file_name: "Main.cpp".to_string(),
         },
     );
     map.insert(
         "cpp17-acl_gcc:10.2.0".to_string(), //C++17 + ACL
         Command {
-            compile: "g++-10 Main.cpp -O2 -lm -std=gnu++17 -I . -o Main.out 2> /judge/userStderr.txt"
-                .to_string(),
-            run: "./Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
+            compile:
+                "g++-10 Main.cpp -O2 -lm -std=gnu++17 -I . -o Main.out 2> /judge/userStderr.txt"
+                    .to_string(),
+            run:
+                "./Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
+                    .to_string(),
             file_name: "Main.cpp".to_string(),
         },
     );
@@ -43,7 +51,9 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         Command {
             compile: "g++-10 Main.cpp -O2 -lm -std=gnu++2a -o Main.out 2> /judge/userStderr.txt"
                 .to_string(),
-            run: "./Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
+            run:
+                "./Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
+                    .to_string(),
             file_name: "Main.cpp".to_string(),
         },
     );
@@ -51,7 +61,8 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         "java:11.0.9".to_string(), //java11
         Command {
             compile: "javac -encoding UTF-8 Main.java 2> /judge/userStderr.txt".to_string(),
-            run: "java Main < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
+            run: "java Main < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
+                .to_string(),
             file_name: "Main.java".to_string(),
         },
     );
@@ -124,7 +135,9 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         "fortran:10.2.0".to_string(),
         Command {
             compile: "gfortran-10 -O2 Main.f90 -o Main.out 2> /judge/userStderr.txt".to_string(),
-            run: "./Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
+            run:
+                "./Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
+                    .to_string(),
             file_name: "Main.f90".to_string(),
         },
     );
@@ -147,7 +160,9 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         "crystal:0.35.1".to_string(),
         Command {
             compile: "crystal build Main.cr -o Main.out 2> /judge/userStderr.txt".to_string(),
-            run: "./Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
+            run:
+                "./Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
+                    .to_string(),
             file_name: "Main.cr".to_string(),
         },
     );
