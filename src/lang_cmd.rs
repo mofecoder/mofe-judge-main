@@ -91,14 +91,14 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
     );
     map.insert( "cs_dotnet:5.0".to_string(), // C#
         Command {
-            compile: "source ~/.profile && cd Main && dotnet new console && mv ./../Main.cs Program.cs && dotnet publish -c Release --nologo -v q -o . 2> ..//judge/userStderr.txt && cd /".to_string(),
+            compile: "source ~/.profile && cd Main && dotnet new console && mv ./../Main.cs Program.cs && dotnet publish -c Release --nologo -v q -o . 2> ../judge/userStderr.txt && cd /".to_string(),
             run: "source ~/.profile && dotnet ./Main/Main.dll < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
             file_name: "Main.cs".to_string(),
         },
     );
     map.insert( "go:1.15.5".to_string(), //golang
         Command {
-            compile: "source ~/.profile && mv Main.go Main && cd Main && go build Main.go 2> ..//judge/userStderr.txt".to_string(),
+            compile: "source ~/.profile && mv Main.go Main && cd Main && go build Main.go 2> ../judge/userStderr.txt".to_string(),
             run: "./Main/Main < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
             file_name: "Main.go".to_string(),
         },
@@ -112,7 +112,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
     );
     map.insert( "rust:1.48.0".to_string(),
         Command {
-            compile: "source ~/.profile && cd rust_workspace && mv /Main.rs ./src/main.rs && cargo build --release 2> //judge/userStderr.txt && cd /".to_string(),
+            compile: "source ~/.profile && cd rust_workspace && mv /Main.rs ./src/main.rs && cargo build --release 2> /judge/userStderr.txt && cd /".to_string(),
             run: "./rust_workspace/target/release/Rust < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
             file_name: "Main.rs".to_string(), 
         },
