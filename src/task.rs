@@ -226,7 +226,6 @@ impl JudgeTask {
             .ip_address
             .expect("couldn't get IP address");
 
-        dbg!(name, &ip_addr);
         Ok((res, ip_addr))
     }
 
@@ -289,7 +288,6 @@ impl JudgeTask {
 
     /// Docker コンテナを削除する
     async fn remove_container(&self, name: &str) -> Result<()> {
-        dbg!("called");
         let options = RemoveContainerOptions {
             force: true,
             ..Default::default()
