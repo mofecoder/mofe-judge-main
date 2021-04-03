@@ -91,6 +91,7 @@ impl ProblemsRepository for DbPool {
                     , created_at
                     , updated_at
                     , deleted_at 
+                    , checker_path
                 FROM
                     problems 
                 WHERE
