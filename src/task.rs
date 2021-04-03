@@ -102,18 +102,6 @@ async fn execute_task(
 
     let req = generate_judge_request(submit.id, &command.run, problem, testcases);
 
-    let compile_response = task
-        .request_compile(
-            &ip_addr,
-            &CompileRequest {
-                submit_id: submit.id,
-                cmd: command.compile.clone(),
-            },
-        )
-        .await?;
-    if !compile_response.0.ok {
-        return Err(anyhow::anyhow!("Compile failed"));
-    }
     let download_response = task
         .request_download(
             &ip_addr,
@@ -127,6 +115,19 @@ async fn execute_task(
 
     if download_response.status() != StatusCode::OK {
         return Err(anyhow::anyhow!("Download failed"));
+    }
+
+    let compile_response = task
+        .request_compile(
+            &ip_addr,
+            &CompileRequest {
+                submit_id: submit.id,
+                cmd: command.compile.clone(),
+            },
+        )
+        .await?;
+    if !compile_response.0.ok {
+        return Err(anyhow::anyhow!("Compile failed"));
     }
 
     let _judge_response = task.request_judge(&ip_addr, &req).await?;
@@ -224,6 +225,7 @@ impl JudgeTask {
         let ip_addr = network_settings
             .ip_address
             .expect("couldn't get IP address");
+
         Ok((res, ip_addr))
     }
 
@@ -240,9 +242,11 @@ impl JudgeTask {
             ))
             .json(&req)
             .send()
-            .await?
-            .json()
             .await?;
+
+        println!("{:?}", &resp);
+
+        let resp = resp.json().await?;
 
         Ok(resp)
     }

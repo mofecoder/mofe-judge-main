@@ -8,7 +8,7 @@ pub struct Config {
 }
 
 pub fn load_config() -> Config {
-    const DEFAULT_JUDGE_CONTAINER_PORT: &str = "8080";
+    const DEFAULT_JUDGE_CONTAINER_PORT: &str = "8000";
     const DEFAULT_DOCKER_ADDRESS: &str = "http://localhost:2375";
     let database_url = dotenv::var("DATABASE_URL").unwrap();
     let judge_container_port = dotenv::var("JUDGE_CONTAINER_PORT")
