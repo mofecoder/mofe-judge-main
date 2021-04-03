@@ -152,12 +152,13 @@ fn generate_judge_request(
     let request_problem = Problem {
         problem_id: problem.id,
         uuid: problem.uuid.unwrap_or_default(),
+        checker_path: "checker_sources/dummy_checker.cpp".to_string(),
     };
     JudgeRequest {
         submit_id,
         cmd: cmd.to_string(),
-        time_limit: 0,
-        mem_limit: 0,
+        time_limit: ENV_CONFIG.execute_time_limit,
+        mem_limit: ENV_CONFIG.execute_memory_limit,
         testcases: request_testcases,
         problem: request_problem,
     }

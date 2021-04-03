@@ -5,6 +5,8 @@ pub struct Config {
     pub database_url: String,
     pub judge_container_port: String,
     pub docker_address: String,
+    pub execute_time_limit: i32,
+    pub execute_memory_limit: i32,
 }
 
 pub fn load_config() -> Config {
@@ -15,9 +17,17 @@ pub fn load_config() -> Config {
         .unwrap_or_else(|_| DEFAULT_JUDGE_CONTAINER_PORT.to_string());
     let docker_address =
         dotenv::var("DOCKER_ADDRESS").unwrap_or_else(|_| DEFAULT_DOCKER_ADDRESS.to_string());
+    let execute_time_limit = dotenv::var("EXECUTE_TIME_LIMIT").unwrap().parse().unwrap();
+    let execute_memory_limit = dotenv::var("EXECUTE_MEMORY_LIMIT")
+        .unwrap()
+        .parse()
+        .unwrap();
+
     Config {
         database_url,
         judge_container_port,
         docker_address,
+        execute_time_limit,
+        execute_memory_limit,
     }
 }
