@@ -153,6 +153,7 @@ fn generate_judge_request(
     let request_problem = Problem {
         problem_id: problem.id,
         uuid: problem.uuid.unwrap_or_default(),
+        checker_path: problem.checker_path,
     };
     JudgeRequest {
         submit_id,
@@ -208,6 +209,7 @@ impl JudgeTask {
             host_config: Some(HostConfig {
                 memory: Some(2_147_483_648_i64),
                 pids_limit: Some(512_i64),
+                privileged: Some(true),
                 ..Default::default()
             }),
             ..Default::default()
@@ -244,7 +246,9 @@ impl JudgeTask {
             .send()
             .await?;
 
-        println!("{:?}", &resp);
+        if resp.status() != StatusCode::OK {
+            anyhow::bail!("response status code was not 200 OK");
+        }
 
         let resp = resp.json().await?;
 
@@ -273,6 +277,8 @@ impl JudgeTask {
         ip_addr: &str,
         req: &JudgeRequest,
     ) -> Result<JudgeResponse, anyhow::Error> {
+        // println!("{}", serde_json::to_string(req).unwrap());
+
         let resp = self
             .http_client
             .post(&format!(

@@ -169,7 +169,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
     map.insert(
         "text_cat:8.30".to_string(),
         Command {
-            compile: ".to_string(), 2> /judge/userStderr.txt".to_string(),
+            compile: ":".to_string(),
             run: "cat Main.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
             file_name: "Main.txt".to_string(),
         },

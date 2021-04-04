@@ -10,8 +10,8 @@
       "nullable": []
     }
   },
-  "9c7a4ad64aa03d84092acc7bd467acadfcda51a27f63994a4a28db730ef807dc": {
-    "query": "\n                SELECT\n                    id\n                    , slug\n                    , name\n                    , contest_id\n                    , writer_user_id\n                    , position\n                    , uuid\n                    , difficulty\n                    , `statement`\n                    , `constraints`\n                    , input_format\n                    , output_format\n                    , created_at\n                    , updated_at\n                    , deleted_at \n                FROM\n                    problems \n                WHERE\n                    id = ? \n            ",
+  "abb12215101bb1544f4895de268ffff148903ca0669e50df39d099120d815a5b": {
+    "query": "\n                SELECT\n                    id\n                    , slug\n                    , name\n                    , contest_id\n                    , writer_user_id\n                    , position\n                    , uuid\n                    , difficulty\n                    , `statement`\n                    , `constraints`\n                    , input_format\n                    , output_format\n                    , created_at\n                    , updated_at\n                    , deleted_at \n                    , checker_path\n                FROM\n                    problems \n                WHERE\n                    id = ? \n            ",
     "describe": {
       "columns": [
         {
@@ -193,6 +193,18 @@
             "char_set": 63,
             "max_size": 19
           }
+        },
+        {
+          "ordinal": 15,
+          "name": "checker_path",
+          "type_info": {
+            "type": "VarString",
+            "flags": {
+              "bits": 4097
+            },
+            "char_set": 224,
+            "max_size": 1020
+          }
         }
       ],
       "parameters": {
@@ -213,7 +225,8 @@
         false,
         false,
         false,
-        true
+        true,
+        false
       ]
     }
   },
