@@ -24,6 +24,7 @@ pub struct Problem {
     pub name: Option<String>,
     pub contest_id: Option<i64>,
     pub writer_user_id: i64,
+    pub checker_path: String,
     pub position: Option<String>,
     pub uuid: Option<String>,
     pub difficulty: String,
