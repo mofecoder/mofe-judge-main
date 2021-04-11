@@ -153,7 +153,7 @@ fn generate_judge_request(
     let request_problem = Problem {
         problem_id: problem.id,
         uuid: problem.uuid.unwrap_or_default(),
-        checker_path: problem.checker_path,
+        checker_path: problem.checker_path.unwrap_or_else(|| "checker_path/wcmp.cpp".to_string()),
     };
     JudgeRequest {
         submit_id,
@@ -236,6 +236,8 @@ impl JudgeTask {
         ip_addr: &str,
         req: &CompileRequest,
     ) -> Result<CompileResponse, anyhow::Error> {
+        dbg!(req);
+
         let resp = self
             .http_client
             .post(&format!(
@@ -260,6 +262,8 @@ impl JudgeTask {
         ip_addr: &str,
         req: &DownloadRequest,
     ) -> Result<Response, anyhow::Error> {
+        dbg!(req);
+
         let resp = self
             .http_client
             .post(&format!(
@@ -278,6 +282,7 @@ impl JudgeTask {
         req: &JudgeRequest,
     ) -> Result<JudgeResponse, anyhow::Error> {
         // println!("{}", serde_json::to_string(req).unwrap());
+        println!("{}", serde_json::to_string(req).unwrap());
 
         let resp = self
             .http_client
@@ -288,8 +293,11 @@ impl JudgeTask {
             .json(&req)
             .send()
             .await?;
+        
+        let text = resp.text().await?;
+        dbg!(&text);
 
-        Ok(resp.json().await?)
+        Ok(serde_json::from_str(&text)?)
     }
 
     /// Docker コンテナを削除する
