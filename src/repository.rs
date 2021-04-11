@@ -92,6 +92,7 @@ impl ProblemsRepository for DbPool {
                     , updated_at
                     , deleted_at 
                     , checker_path
+                    , execution_time_limit
                 FROM
                     problems 
                 WHERE

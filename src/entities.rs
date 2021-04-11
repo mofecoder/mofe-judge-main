@@ -25,6 +25,7 @@ pub struct Problem {
     pub contest_id: Option<i64>,
     pub writer_user_id: i64,
     pub checker_path: Option<String>,
+    pub execution_time_limit: i32,
     pub position: Option<String>,
     pub uuid: Option<String>,
     pub difficulty: String,
