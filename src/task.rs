@@ -27,6 +27,7 @@ use std::{sync::Arc, time::Duration};
 use tokio::time::sleep;
 // submit が取得できなかったときの次の取得までの間隔
 const INTERVAL: Duration = Duration::from_secs(1);
+const MEM_LIMIT: i32 = 1_024; // 1,024KB
 
 pub async fn gen_job(db_conn: Arc<DbPool>, docker_conn: Arc<Docker>, http_client: Client) {
     // この `task` が 1 実行単位
@@ -158,8 +159,8 @@ fn generate_judge_request(
     JudgeRequest {
         submit_id,
         cmd: cmd.to_string(),
-        time_limit: 0,
-        mem_limit: 0,
+        time_limit: problem.execution_time_limit,
+        mem_limit: MEM_LIMIT,
         testcases: request_testcases,
         problem: request_problem,
     }
