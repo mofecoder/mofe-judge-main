@@ -20,7 +20,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
             run:
                 "./judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
                     .to_string(),
-            file_name: "/judge/Main.c".to_string(),
+            file_name: "Main.c".to_string(),
         },
     );
     map.insert(
@@ -31,7 +31,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
             run:
                 "./judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
                     .to_string(),
-            file_name: "/judge/Main.cpp".to_string(),
+            file_name: "Main.cpp".to_string(),
         },
     );
     map.insert(
@@ -43,7 +43,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
             run:
                 "./judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
                     .to_string(),
-            file_name: "/judge/Main.cpp".to_string(),
+            file_name: "Main.cpp".to_string(),
         },
     );
     map.insert(
@@ -54,7 +54,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
             run:
                 "./judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
                     .to_string(),
-            file_name: "/judge/Main.cpp".to_string(),
+            file_name: "Main.cpp".to_string(),
         },
     );
     map.insert(
@@ -63,7 +63,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
             compile: "javac -encoding UTF-8 /judge/Main.java 2> /judge/userStderr.txt".to_string(),
             run: "java /judge/Main < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
                 .to_string(),
-            file_name: "/judge/Main.java".to_string(),
+            file_name: "Main.java".to_string(),
         },
     );
     map.insert(
@@ -71,7 +71,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         Command {
             compile: "python3.9 -m py_compile /judge/Main.py 2> /judge/userStderr.txt".to_string(),
             run: "python3.9 /judge/Main.py < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
-            file_name: "/judge/Main.py".to_string(),
+            file_name: "Main.py".to_string(),
         },
     );
     map.insert(
@@ -79,56 +79,56 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         Command {
             compile: "pypy3 -m py_compile /judge/Main.py 2> /judge/userStderr.txt".to_string(),
             run: "pypy3 /judge/Main.py < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
-            file_name: "/judge/Main.py".to_string(),
+            file_name: "Main.py".to_string(),
         },
     );
     map.insert( "cs_mono:6.12.0.90".to_string(), //C#
         Command {
             compile: "source ~/.profile && mcs /judge/Main.cs -out:/judge/Main.exe 2> /judge/userStderr.txt".to_string(),
             run: "source ~/.profile && mono /judge/Main.exe < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
-            file_name: "/judge/Main.cs".to_string(), 
+            file_name: "Main.cs".to_string(), 
         },
     );
     map.insert( "cs_dotnet:5.0".to_string(), // C#
         Command {
             compile: "source ~/.profile && cd /judge/Main && dotnet new console && mv /judge/Main.cs /judge/Main/Program.cs && dotnet publish -c Release --nologo -v q -o . 2> /judge/userStderr.txt && cd /".to_string(),
             run: "source ~/.profile && dotnet /judge/Main/Main.dll < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
-            file_name: "/judge/Main.cs".to_string(),
+            file_name: "Main.cs".to_string(),
         },
     );
     map.insert( "go:1.15.5".to_string(), //golang
         Command {
             compile: "source ~/.profile && mv /judge/Main.go /judge/Main && cd /judge/Main && go build -o main.out /judge/Main.go 2> /judge/userStderr.txt".to_string(),
             run: "./judge/Main/main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
-            file_name: "/judge/Main.go".to_string(),
+            file_name: "Main.go".to_string(),
         },
     );
     map.insert( "nim:1.4.0".to_string(),
         Command {
             compile: "source ~/.profile && nim cpp -d:release --opt:speed --multimethods:on -o:/judge/Main.out /judge/Main.nim 2> /judge/userStderr.txt".to_string(),
             run: "./judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
-            file_name: "/judge/Main.nim".to_string(),
+            file_name: "Main.nim".to_string(),
         },
     );
     map.insert( "rust:1.48.0".to_string(),
         Command {
             compile: "source ~/.profile && cd /judge/rust_workspace && mv /judge/Main.rs /rust_workspace/src/main.rs && cargo build --release 2> /judge/userStderr.txt && cd /".to_string(),
             run: "./rust_workspace/target/release/Rust < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
-            file_name: "/judge/Main.rs".to_string(), 
+            file_name: "Main.rs".to_string(), 
         },
     );
     map.insert( "ruby:2.7.2".to_string(),
         Command {
             compile: "source ~/.profile && ruby -w -c /judge/Main.rb 2> /judge/userStderr.txt".to_string(),
             run: "source ~/.profile && ruby /judge/Main.rb < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
-            file_name: "/judge/Main.rb".to_string(),
+            file_name: "Main.rb".to_string(),
         },
     );
     map.insert( "kotlin:1.4.10".to_string(),
         Command {
             compile: "source ~/.profile && kotlinc /judge/Main.kt -include-runtime -d Main.jar 2> /judge/userStderr.txt".to_string(),
             run: "source ~/.profile && kotlin /judge/Main.jar < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
-            file_name: "/judge/Main.kt".to_string(),
+            file_name: "Main.kt".to_string(),
         },
     );
     map.insert(
@@ -138,7 +138,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
             run:
                 "./judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
                     .to_string(),
-            file_name: "/judge/Main.f90".to_string(),
+            file_name: "Main.f90".to_string(),
         },
     );
     map.insert(
@@ -146,14 +146,14 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         Command {
             compile: "perl -c /judge/Main.pl 2> /judge/userStderr.txt".to_string(),
             run: "perl /judge/Main.pl < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
-            file_name: "/judge/Main.pl".to_string(),
+            file_name: "Main.pl".to_string(),
         },
     );
     map.insert( "raku:2020.10".to_string(),
         Command {
             compile: "source ~/.profile && perl6 -c /judge/Main.p6 2> /judge/userStderr.txt".to_string(),
             run: "source ~/.profile && perl6 /judge/Main.p6 < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
-            file_name: "/judge/Main.p6".to_string(),
+            file_name: "Main.p6".to_string(),
         },
     );
     map.insert(
@@ -163,7 +163,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
             run:
                 "./judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
                     .to_string(),
-            file_name: "/judge/Main.cr".to_string(),
+            file_name: "Main.cr".to_string(),
         },
     );
     map.insert(
@@ -171,7 +171,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         Command {
             compile: ":".to_string(),
             run: "cat /judge/Main.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
-            file_name: "/judge/Main.txt".to_string(),
+            file_name: "Main.txt".to_string(),
         },
     );
     map.insert(
@@ -179,7 +179,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         Command {
             compile: "bash -n /judge/Main.sh 2> /judge/userStderr.txt".to_string(),
             run: "bash /judge/Main.sh < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
-            file_name: "/judge/Main.sh".to_string(),
+            file_name: "Main.sh".to_string(),
         },
     );
     map
