@@ -18,7 +18,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
             compile: "gcc-10 /judge/Main.c -O2 -lm -std=gnu17 -o /judge/Main.out 2> /judge/userStderr.txt"
                 .to_string(),
             run:
-                "./judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
+                "/judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
                     .to_string(),
             file_name: "Main.c".to_string(),
         },
@@ -29,7 +29,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
             compile: "g++-10 /judge/Main.cpp -O2 -lm -std=gnu++17 -o /judge/Main.out 2> /judge/userStderr.txt"
                 .to_string(),
             run:
-                "./judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
+                "/judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
                     .to_string(),
             file_name: "Main.cpp".to_string(),
         },
@@ -41,7 +41,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
                 "g++-10 /judge/Main.cpp -O2 -lm -std=gnu++17 -I/ -o /judge/Main.out 2> /judge/userStderr.txt"
                     .to_string(),
             run:
-                "./judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
+                "/judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
                     .to_string(),
             file_name: "Main.cpp".to_string(),
         },
@@ -52,7 +52,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
             compile: "g++-10 /judge/Main.cpp -O2 -lm -std=gnu++2a -o /judge/Main.out 2> /judge/userStderr.txt"
                 .to_string(),
             run:
-                "./judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
+                "/judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
                     .to_string(),
             file_name: "Main.cpp".to_string(),
         },
@@ -106,7 +106,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
     map.insert( "nim:1.4.0".to_string(),
         Command {
             compile: "source ~/.profile && nim cpp -d:release --opt:speed --multimethods:on -o:/judge/Main.out /judge/Main.nim 2> /judge/userStderr.txt".to_string(),
-            run: "./judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
+            run: "/judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
             file_name: "Main.nim".to_string(),
         },
     );
@@ -136,7 +136,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         Command {
             compile: "gfortran-10 -O2 /judge/Main.f90 -o /judge/Main.out 2> /judge/userStderr.txt".to_string(),
             run:
-                "./judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
+                "/judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
                     .to_string(),
             file_name: "Main.f90".to_string(),
         },
@@ -161,7 +161,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         Command {
             compile: "crystal build /judge/Main.cr -o /judge/Main.out 2> /judge/userStderr.txt".to_string(),
             run:
-                "./judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
+                "/judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
                     .to_string(),
             file_name: "Main.cr".to_string(),
         },
