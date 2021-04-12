@@ -97,6 +97,7 @@ impl ProblemsRepository for DbPool {
                     problems 
                 WHERE
                     id = ? 
+                    AND deleted_at IS NULL 
             "#,
             problem_id,
         )
@@ -130,6 +131,7 @@ impl TestcasesRepository for DbPool {
                 testcases
             WHERE
                 problem_id = ? 
+                AND deleted_at IS NULL 
             "#,
             problem_id,
         )
