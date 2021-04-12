@@ -22,7 +22,7 @@ use futures::{
     future::FutureExt,
     stream::{self, StreamExt},
 };
-use reqwest::{Client, Response, StatusCode};
+use reqwest::{header, Client, Response, StatusCode};
 use std::{sync::Arc, time::Duration};
 use tokio::time::sleep;
 // submit が取得できなかったときの次の取得までの間隔
@@ -154,7 +154,9 @@ fn generate_judge_request(
     let request_problem = Problem {
         problem_id: problem.id,
         uuid: problem.uuid.unwrap_or_default(),
-        checker_path: problem.checker_path.unwrap_or_else(|| "checker_path/wcmp.cpp".to_string()),
+        checker_path: problem
+            .checker_path
+            .unwrap_or_else(|| "checker_path/wcmp.cpp".to_string()),
     };
     JudgeRequest {
         submit_id,
@@ -229,6 +231,9 @@ impl JudgeTask {
             .ip_address
             .expect("couldn't get IP address");
 
+        // TODO: コンテナが立ち上がったかどうかのチェック
+        tokio::time::sleep(Duration::new(1, 0)).await;
+
         Ok((res, ip_addr))
     }
 
@@ -237,8 +242,6 @@ impl JudgeTask {
         ip_addr: &str,
         req: &CompileRequest,
     ) -> Result<CompileResponse, anyhow::Error> {
-        dbg!(req);
-
         let resp = self
             .http_client
             .post(&format!(
@@ -246,11 +249,12 @@ impl JudgeTask {
                 &ip_addr, &ENV_CONFIG.judge_container_port
             ))
             .json(&req)
+            .header(header::CONTENT_TYPE, "application/json")
             .send()
             .await?;
 
         if resp.status() != StatusCode::OK {
-            anyhow::bail!("response status code was not 200 OK");
+            anyhow::bail!("compile: response status code was not 200 OK");
         }
 
         let resp = resp.json().await?;
@@ -263,8 +267,6 @@ impl JudgeTask {
         ip_addr: &str,
         req: &DownloadRequest,
     ) -> Result<Response, anyhow::Error> {
-        dbg!(req);
-
         let resp = self
             .http_client
             .post(&format!(
@@ -272,6 +274,7 @@ impl JudgeTask {
                 &ip_addr, &ENV_CONFIG.judge_container_port
             ))
             .json(&req)
+            .header(header::CONTENT_TYPE, "application/json")
             .send()
             .await?;
 
@@ -282,23 +285,25 @@ impl JudgeTask {
         ip_addr: &str,
         req: &JudgeRequest,
     ) -> Result<JudgeResponse, anyhow::Error> {
-        // println!("{}", serde_json::to_string(req).unwrap());
-        println!("{}", serde_json::to_string(req).unwrap());
-
         let resp = self
             .http_client
             .post(&format!(
                 "http://{}:{}/judge",
                 &ip_addr, &ENV_CONFIG.judge_container_port
             ))
+            .header(header::CONTENT_TYPE, "application/json")
             .json(&req)
             .send()
             .await?;
-        
-        let text = resp.text().await?;
-        dbg!(&text);
 
-        Ok(serde_json::from_str(&text)?)
+        if resp.status() != StatusCode::OK {
+            bail!(format!(
+                "judge: response status code was not 200 OK\nmessage:{}",
+                resp.text().await?
+            ));
+        }
+
+        Ok(resp.json().await?)
     }
 
     /// Docker コンテナを削除する
