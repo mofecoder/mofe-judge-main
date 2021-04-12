@@ -55,7 +55,7 @@ pub async fn gen_job(db_conn: Arc<DbPool>, docker_conn: Arc<Docker>, http_client
                     eprint!("{}", e);
                     sleep(INTERVAL).await;
                     task.save_internal_error(submit.id).await?;
-                    task.remove_container(&container_name).await?;
+                    //task.remove_container(&container_name).await?;
                     bail!("internal error");
                 }
             }
@@ -127,8 +127,9 @@ async fn execute_task(
             },
         )
         .await?;
+    // コンパイルエラーはコンテナの中で処理をしているはずなので ok
     if !compile_response.0.ok {
-        return Err(anyhow::anyhow!("Compile failed"));
+        return Ok(())
     }
 
     let _judge_response = task.request_judge(&ip_addr, &req).await?;
