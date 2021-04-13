@@ -112,8 +112,8 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
     );
     map.insert( "rust:1.48.0".to_string(),
         Command {
-            compile: "source ~/.profile && cd /judge/rust_workspace && mv /judge/Main.rs /rust_workspace/src/main.rs && cargo build --release 2> /judge/userStderr.txt && cd /".to_string(),
-            run: "./rust_workspace/target/release/Rust < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
+            compile: "source ~/.profile && cd /judge/rust_workspace && mv /judge/Main.rs /judge/rust_workspace/src/main.rs && cargo build --release 2> /judge/userStderr.txt && cd /".to_string(),
+            run: "/judge/rust_workspace/target/release/Rust < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
             file_name: "Main.rs".to_string(), 
         },
     );
