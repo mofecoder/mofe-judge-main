@@ -7,7 +7,7 @@ use crate::{
         CompileRequest, CompileResponse, DownloadRequest, JudgeRequest, JudgeResponse, Problem,
         Testcase,
     },
-    repository::{ProblemsRepository, SubmitRepository, TestcasesRepository},
+    repository::{ProblemsRepository, SubmitRepository, TestcasesRepository, TestcaseResultsRepository},
     utils,
 };
 
@@ -91,6 +91,11 @@ async fn execute_task(
             bail!("Couldn't find a language command setting.");
         }
     };
+
+    // リジャッジなら過去の testcase_results をすべて消す。
+    if submit.status == "WR" {
+        task.delete_testcase_results(submit.id).await?;
+    }
 
     // コンテナ作成
 
@@ -201,6 +206,10 @@ impl JudgeTask {
 
     async fn fetch_testcases(&self, problem_id: i64) -> Result<Vec<entities::Testcase>> {
         Ok(self.db_conn.fetch_testcases(problem_id).await?)
+    }
+
+    async fn delete_testcase_results(&self, submit_id: i64) -> Result<()> {
+        Ok(self.db_conn.delete_testcase_results(submit_id).await?)
     }
 
     /// Docker コンテナを指定された名前で立ち上げる

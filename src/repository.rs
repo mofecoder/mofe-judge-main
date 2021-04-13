@@ -3,6 +3,7 @@ use crate::{db::DbPool, entities::Problem};
 use anyhow::Result;
 use async_trait::async_trait;
 use sqlx::{MySql, Transaction};
+use chrono::prelude::*;
 
 #[async_trait]
 pub trait SubmitRepository {
@@ -138,5 +139,32 @@ impl TestcasesRepository for DbPool {
         .fetch_all(self)
         .await?;
         Ok(testcases)
+    }
+}
+
+#[async_trait]
+pub trait TestcaseResultsRepository {
+    async fn delete_testcase_results(&self, submit_id: i64) -> Result<()>;
+}
+#[async_trait]
+impl TestcaseResultsRepository for DbPool {
+    async fn delete_testcase_results(&self, submit_id: i64) -> Result<()> {
+        sqlx::query(
+            r#"
+            UPDATE 
+                testcase_results
+            SET 
+                deleted_at = ?
+            WHERE 
+                submit_id = ? 
+                AND deleted_at IS NULL
+            "#,
+        )
+        .bind(Local::now().naive_local())
+        .bind(submit_id)
+        .execute(self)
+        .await?;
+    
+        Ok(())
     }
 }
