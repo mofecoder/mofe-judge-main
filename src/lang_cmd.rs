@@ -61,7 +61,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         "java:11.0.9".to_string(), //java11
         Command {
             compile: "javac -encoding UTF-8 /judge/Main.java 2> /judge/userStderr.txt".to_string(),
-            run: "java /judge/Main < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
+            run: "cd /judge && java Main < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
                 .to_string(),
             file_name: "Main.java".to_string(),
         },
@@ -91,15 +91,15 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
     );
     map.insert( "cs_dotnet:5.0".to_string(), // C#
         Command {
-            compile: "source ~/.profile && cd /judge/Main && dotnet new console && mv /judge/Main.cs /judge/Main/Program.cs && dotnet publish -c Release --nologo -v q -o . 2> /judge/userStderr.txt && cd /".to_string(),
+            compile: "source ~/.profile && export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 && cd /judge/Main &&  dotnet new console && mv /judge/Main.cs /judge/Main/Program.cs && dotnet publish -c Release --nologo -v q -o . 2> /judge/userStderr.txt && cd /".to_string(),
             run: "source ~/.profile && dotnet /judge/Main/Main.dll < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
             file_name: "Main.cs".to_string(),
         },
     );
     map.insert( "go:1.15.5".to_string(), //golang
         Command {
-            compile: "source ~/.profile && mv /judge/Main.go /judge/Main && cd /judge/Main && go build -o main.out /judge/Main.go 2> /judge/userStderr.txt".to_string(),
-            run: "./judge/Main/main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
+            compile: "source ~/.profile && mv /judge/Main.go /judge/Main && cd /judge/Main && go build -o Main.out Main.go 2> /judge/userStderr.txt".to_string(),
+            run: "/judge/Main/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
             file_name: "Main.go".to_string(),
         },
     );

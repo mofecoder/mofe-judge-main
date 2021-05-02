@@ -7,7 +7,9 @@ use crate::{
         CompileRequest, CompileResponse, DownloadRequest, JudgeRequest, JudgeResponse, Problem,
         Testcase,
     },
-    repository::{ProblemsRepository, SubmitRepository, TestcasesRepository, TestcaseResultsRepository},
+    repository::{
+        ProblemsRepository, SubmitRepository, TestcaseResultsRepository, TestcasesRepository,
+    },
     utils,
 };
 
@@ -100,7 +102,6 @@ async fn execute_task(
     // コンテナ作成
 
     let (_container, ip_addr) = task.create_container(&container_name).await?;
-
     // テストケース、問題を取得
 
     let problem = task.fetch_problem(submit.problem_id).await?;
@@ -134,7 +135,7 @@ async fn execute_task(
         .await?;
     // コンパイルエラーはコンテナの中で処理をしているはずなので ok
     if !compile_response.0.ok {
-        return Ok(())
+        return Ok(());
     }
 
     let _judge_response = task.request_judge(&ip_addr, &req).await?;
@@ -252,6 +253,7 @@ impl JudgeTask {
         ip_addr: &str,
         req: &CompileRequest,
     ) -> Result<CompileResponse, anyhow::Error> {
+        dbg!(serde_json::to_string(req).unwrap());
         let resp = self
             .http_client
             .post(&format!(
@@ -264,7 +266,11 @@ impl JudgeTask {
             .await?;
 
         if resp.status() != StatusCode::OK {
-            anyhow::bail!("compile: response status code was not 200 OK");
+            anyhow::bail!(format!(
+                "{}\n{}",
+                "compile: response status code was not 200 OK",
+                resp.text().await?
+            ));
         }
 
         let resp = resp.json().await?;
@@ -277,6 +283,7 @@ impl JudgeTask {
         ip_addr: &str,
         req: &DownloadRequest,
     ) -> Result<Response, anyhow::Error> {
+        dbg!(serde_json::to_string(req).unwrap());
         let resp = self
             .http_client
             .post(&format!(
@@ -295,6 +302,7 @@ impl JudgeTask {
         ip_addr: &str,
         req: &JudgeRequest,
     ) -> Result<JudgeResponse, anyhow::Error> {
+        dbg!(serde_json::to_string(req).unwrap());
         let resp = self
             .http_client
             .post(&format!(
@@ -308,7 +316,7 @@ impl JudgeTask {
 
         if resp.status() != StatusCode::OK {
             bail!(format!(
-                "judge: response status code was not 200 OK\nmessage:{}",
+                "judge: response status code was not 200 OK\n{}",
                 resp.text().await?
             ));
         }
