@@ -2,8 +2,8 @@ use crate::entities::{Submit, Testcase};
 use crate::{db::DbPool, entities::Problem};
 use anyhow::Result;
 use async_trait::async_trait;
-use sqlx::{MySql, Transaction};
 use chrono::prelude::*;
+use sqlx::{MySql, Transaction};
 
 #[async_trait]
 pub trait SubmitRepository {
@@ -164,7 +164,7 @@ impl TestcaseResultsRepository for DbPool {
         .bind(submit_id)
         .execute(self)
         .await?;
-    
+
         Ok(())
     }
 }
