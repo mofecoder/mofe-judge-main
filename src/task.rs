@@ -7,7 +7,9 @@ use crate::{
         CompileRequest, CompileResponse, DownloadRequest, JudgeRequest, JudgeResponse, Problem,
         Testcase,
     },
-    repository::{ProblemsRepository, SubmitRepository, TestcasesRepository},
+    repository::{
+        ProblemsRepository, SubmitRepository, TestcaseResultsRepository, TestcasesRepository,
+    },
     utils,
 };
 
@@ -55,7 +57,7 @@ pub async fn gen_job(db_conn: Arc<DbPool>, docker_conn: Arc<Docker>, http_client
                     eprint!("{}", e);
                     sleep(INTERVAL).await;
                     task.save_internal_error(submit.id).await?;
-                    task.remove_container(&container_name).await?;
+                    //task.remove_container(&container_name).await?;
                     bail!("internal error");
                 }
             }
@@ -92,10 +94,14 @@ async fn execute_task(
         }
     };
 
+    // リジャッジなら過去の testcase_results をすべて消す。
+    if submit.status == "WR" {
+        task.delete_testcase_results(submit.id).await?;
+    }
+
     // コンテナ作成
 
     let (_container, ip_addr) = task.create_container(&container_name).await?;
-
     // テストケース、問題を取得
 
     let problem = task.fetch_problem(submit.problem_id).await?;
@@ -127,8 +133,9 @@ async fn execute_task(
             },
         )
         .await?;
+    // コンパイルエラーはコンテナの中で処理をしているはずなので ok
     if !compile_response.0.ok {
-        return Err(anyhow::anyhow!("Compile failed"));
+        return Ok(());
     }
 
     let _judge_response = task.request_judge(&ip_addr, &req).await?;
@@ -202,6 +209,10 @@ impl JudgeTask {
         Ok(self.db_conn.fetch_testcases(problem_id).await?)
     }
 
+    async fn delete_testcase_results(&self, submit_id: i64) -> Result<()> {
+        Ok(self.db_conn.delete_testcase_results(submit_id).await?)
+    }
+
     /// Docker コンテナを指定された名前で立ち上げる
     async fn create_container(&self, name: &str) -> Result<(ContainerCreateResponse, String)> {
         const IMAGE: &str = "cafecoder_docker:2104";
@@ -242,6 +253,7 @@ impl JudgeTask {
         ip_addr: &str,
         req: &CompileRequest,
     ) -> Result<CompileResponse, anyhow::Error> {
+        dbg!(serde_json::to_string(req).unwrap());
         let resp = self
             .http_client
             .post(&format!(
@@ -254,7 +266,11 @@ impl JudgeTask {
             .await?;
 
         if resp.status() != StatusCode::OK {
-            anyhow::bail!("compile: response status code was not 200 OK");
+            anyhow::bail!(format!(
+                "{}\n{}",
+                "compile: response status code was not 200 OK",
+                resp.text().await?
+            ));
         }
 
         let resp = resp.json().await?;
@@ -267,6 +283,7 @@ impl JudgeTask {
         ip_addr: &str,
         req: &DownloadRequest,
     ) -> Result<Response, anyhow::Error> {
+        dbg!(serde_json::to_string(req).unwrap());
         let resp = self
             .http_client
             .post(&format!(
@@ -285,6 +302,7 @@ impl JudgeTask {
         ip_addr: &str,
         req: &JudgeRequest,
     ) -> Result<JudgeResponse, anyhow::Error> {
+        dbg!(serde_json::to_string(req).unwrap());
         let resp = self
             .http_client
             .post(&format!(
@@ -298,7 +316,7 @@ impl JudgeTask {
 
         if resp.status() != StatusCode::OK {
             bail!(format!(
-                "judge: response status code was not 200 OK\nmessage:{}",
+                "judge: response status code was not 200 OK\n{}",
                 resp.text().await?
             ));
         }
