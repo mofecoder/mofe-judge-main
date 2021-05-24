@@ -1,11 +1,9 @@
-use anyhow::Result;
-use sqlx::{mysql::MySqlPool, MySql};
-pub type DbPool = sqlx::Pool<MySql>;
+mod connection_pool;
+mod db_executor;
+pub use db_executor::*;
 
-pub async fn new_pool(database_url: &str) -> Result<DbPool> {
-    let pool = MySqlPool::connect(database_url).await?;
-    Ok(pool)
-}
+#[derive(Debug)]
+pub enum DatabaseError {}
 
 #[cfg(feature = "db_test")]
 #[cfg(test)]
