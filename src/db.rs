@@ -14,9 +14,9 @@ mod test {
     use crate::config::ENV_CONFIG;
     #[tokio::test]
     async fn test_db() -> Result<()> {
-        use crate::repository::SubmitRepository;
+        use crate::repository::SubmissionRepository;
         let pool = new_pool(&ENV_CONFIG.database_url).await?;
-        let result = pool.begin().await?.get_submits().await?;
+        let result = pool.begin().await?.get_submissions().await?;
         dbg!(result);
 
         Ok(())
