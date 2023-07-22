@@ -1,4 +1,4 @@
-use crate::entities::{Submit, Testcase};
+use crate::entities::{Submission, Testcase};
 use crate::{db::DbPool, entities::Problem};
 use anyhow::Result;
 use async_trait::async_trait;
@@ -6,15 +6,15 @@ use chrono::prelude::*;
 use sqlx::{MySql, Transaction};
 
 #[async_trait]
-pub trait SubmitRepository {
-    async fn get_submits(&mut self) -> Result<Submit>;
+pub trait SubmissionRepository {
+    async fn get_submissions(&mut self) -> Result<Submission>;
     async fn update_status(&mut self, id: i64, status: &str) -> Result<u64>;
 }
 
 #[async_trait]
-impl SubmitRepository for Transaction<'_, MySql> {
-    async fn get_submits(&mut self) -> Result<Submit> {
-        let submits = sqlx::query_as(
+impl SubmissionRepository for Transaction<'_, MySql> {
+    async fn get_submissions(&mut self) -> Result<Submission> {
+        let submissions = sqlx::query_as(
             r#"
             SELECT
                 id
@@ -29,14 +29,14 @@ impl SubmitRepository for Transaction<'_, MySql> {
                 , lang
                 , created_at
                 , updated_at
-                , deleted_at 
+                , deleted_at
             FROM
-                submits 
+                submissions
             WHERE
-                (status = 'WJ' OR status = 'WR') 
-                AND deleted_at IS NULL 
+                (status = 'WJ' OR status = 'WR')
+                AND deleted_at IS NULL
             ORDER BY
-                updated_at ASC 
+                updated_at ASC
             LIMIT
                 1
             FOR UPDATE
@@ -45,17 +45,17 @@ impl SubmitRepository for Transaction<'_, MySql> {
         .fetch_one(self)
         .await?;
 
-        Ok(submits)
+        Ok(submissions)
     }
 
     async fn update_status(&mut self, id: i64, status: &str) -> Result<u64> {
         let result = sqlx::query!(
             r#"
-            UPDATE submits 
+            UPDATE submissions
             SET
-                status = ? 
+                status = ?
             WHERE
-                id = ? 
+                id = ?
             "#,
             status,
             id,
@@ -91,14 +91,14 @@ impl ProblemsRepository for DbPool {
                     , output_format
                     , created_at
                     , updated_at
-                    , deleted_at 
+                    , deleted_at
                     , checker_path
                     , execution_time_limit
                 FROM
-                    problems 
+                    problems
                 WHERE
-                    id = ? 
-                    AND deleted_at IS NULL 
+                    id = ?
+                    AND deleted_at IS NULL
             "#,
             problem_id,
         )
@@ -127,12 +127,12 @@ impl TestcasesRepository for DbPool {
                 , explanation
                 , created_at
                 , updated_at
-                , deleted_at 
+                , deleted_at
             FROM
                 testcases
             WHERE
-                problem_id = ? 
-                AND deleted_at IS NULL 
+                problem_id = ?
+                AND deleted_at IS NULL
             "#,
             problem_id,
         )
@@ -151,12 +151,12 @@ impl TestcaseResultsRepository for DbPool {
     async fn delete_testcase_results(&self, submit_id: i64) -> Result<()> {
         sqlx::query(
             r#"
-            UPDATE 
+            UPDATE
                 testcase_results
-            SET 
+            SET
                 deleted_at = ?
-            WHERE 
-                submit_id = ? 
+            WHERE
+                submission_id = ?
                 AND deleted_at IS NULL
             "#,
         )

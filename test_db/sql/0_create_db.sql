@@ -79,7 +79,7 @@ create table testcase_results
 (
     id               bigint auto_increment
         primary key,
-    submit_id        bigint      not null,
+    submission_id        bigint      not null,
     testcase_id      bigint      not null,
     status           varchar(16) not null,
     execution_time   int         not null,
@@ -89,8 +89,8 @@ create table testcase_results
     deleted_at       datetime    null
 );
 
-create index index_testcase_results_on_submit_id
-    on testcase_results (submit_id);
+create index index_testcase_results_on_submission_id
+    on testcase_results (submission_id);
 
 create index index_testcase_results_on_testcase_id
     on testcase_results (testcase_id);
@@ -170,7 +170,7 @@ create index index_problems_on_contest_id
 create index index_problems_on_writer_user_id
     on problems (writer_user_id);
 
-create table submits
+create table submissions
 (
     id               bigint auto_increment
         primary key,
@@ -190,8 +190,8 @@ create table submits
         foreign key (problem_id) references problems (id)
 );
 
-create index index_submits_on_problem_id
-    on submits (problem_id);
+create index index_submissions_on_problem_id
+    on submissions (problem_id);
 
 create table testcase_sets
 (

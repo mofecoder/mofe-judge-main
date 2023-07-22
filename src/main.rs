@@ -28,7 +28,7 @@ async fn main() -> Result<()> {
         API_DEFAULT_VERSION,
     )?);
     */
-    let docker_conn = Arc::new(bollard::Docker::connect_with_unix(
+    let docker_conn = Arc::new(bollard::Docker::connect_with_local(
         "/var/run/docker.sock",
         10,
         API_DEFAULT_VERSION,

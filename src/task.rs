@@ -8,7 +8,7 @@ use crate::{
         Testcase,
     },
     repository::{
-        ProblemsRepository, SubmitRepository, TestcaseResultsRepository, TestcasesRepository,
+        ProblemsRepository, SubmissionRepository, TestcaseResultsRepository, TestcasesRepository,
     },
     utils,
 };
@@ -25,6 +25,12 @@ use futures::{
     stream::{self, StreamExt},
 };
 use reqwest::{header, Client, Response, StatusCode};
+use std::clone::Clone;
+use std::default::Default;
+use std::option::Option::{None, Some};
+use std::result::Result::{Err, Ok};
+use std::string::{String, ToString};
+use std::vec::Vec;
 use std::{sync::Arc, time::Duration};
 use tokio::time::sleep;
 // submit が取得できなかったときの次の取得までの間隔
@@ -81,7 +87,7 @@ pub async fn gen_job(db_conn: Arc<DbPool>, docker_conn: Arc<Docker>, http_client
 }
 async fn execute_task(
     task: &JudgeTask,
-    submit: &entities::Submit,
+    submit: &entities::Submission,
     container_name: &str,
 ) -> Result<()> {
     let command = match LANG_CMD.get(&submit.lang) {
@@ -194,9 +200,9 @@ impl JudgeTask {
 
     /// 未ジャッジの提出のうち、もっとも古いもの1件を取得する。
     /// その1件のステータスを「ジャッジ中」にする
-    async fn fetch_submit(&self) -> Result<entities::Submit> {
+    async fn fetch_submit(&self) -> Result<entities::Submission> {
         let mut conn = self.db_conn.begin().await?;
-        let submit = conn.get_submits().await?;
+        let submit = conn.get_submissions().await?;
         conn.update_status(submit.id, "WIP").await?;
         conn.commit().await?;
         Ok(submit)

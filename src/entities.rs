@@ -1,7 +1,7 @@
 use chrono::NaiveDateTime;
 use sqlx::FromRow;
 #[derive(Debug, FromRow)]
-pub struct Submit {
+pub struct Submission {
     pub id: i64,
     pub user_id: i64,
     pub problem_id: i64,
