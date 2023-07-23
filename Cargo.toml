@@ -2,7 +2,7 @@
 name = "cafecoder-rs"
 version = "0.1.0"
 authors = ["earlgray <earlgray283@gmail.com>"]
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -11,14 +11,14 @@ edition = "2018"
 db_test = []
 
 [dependencies]
-sqlx = { version = "0.5.1", features = [ "runtime-tokio-rustls", "mysql", "macros", "chrono", "offline"] }
+sqlx = { version = "0.7.1", features = [ "runtime-tokio", "mysql", "macros", "chrono"] }
 dotenv = "0.15.0"
 chrono = "0.4"
-bollard = "0.10.1"
-rand = "0.8.0"
+bollard = "0.14.0"
+rand = "0.8.5"
 tokio = { version = "1.2.0", features = ["full"] }
-anyhow = "1.0.37"
-async-trait = "0.1.42"
+anyhow = "1.0.72"
+async-trait = "0.1.72"
 futures = "0.3.12"
 serde = { version = "1.0", features = ["derive"] }
 hyper = { version = "0.14", features = [ "full" ] }

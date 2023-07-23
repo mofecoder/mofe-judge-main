@@ -1,19 +1,20 @@
+use crate::entities::Problem;
 use crate::entities::{Submission, Testcase};
-use crate::{db::DbPool, entities::Problem};
 use anyhow::Result;
 use async_trait::async_trait;
 use chrono::prelude::*;
-use sqlx::{MySql, Transaction};
+use sqlx::{Acquire, MySqlConnection};
 
 #[async_trait]
-pub trait SubmissionRepository {
+pub trait SubmissionRepository: Sized {
     async fn get_submissions(&mut self) -> Result<Submission>;
     async fn update_status(&mut self, id: i64, status: &str) -> Result<u64>;
 }
 
-#[async_trait]
-impl SubmissionRepository for Transaction<'_, MySql> {
-    async fn get_submissions(&mut self) -> Result<Submission> {
+pub struct CafeCoderDb {}
+
+impl CafeCoderDb {
+    pub async fn get_submission(conn: &mut MySqlConnection) -> Result<Submission> {
         let submissions = sqlx::query_as(
             r#"
             SELECT
@@ -42,13 +43,13 @@ impl SubmissionRepository for Transaction<'_, MySql> {
             FOR UPDATE
             "#,
         )
-        .fetch_one(self)
+        .fetch_one(&mut *conn)
         .await?;
 
         Ok(submissions)
     }
 
-    async fn update_status(&mut self, id: i64, status: &str) -> Result<u64> {
+    pub async fn update_status(conn: &mut MySqlConnection, id: i64, status: &str) -> Result<u64> {
         let result = sqlx::query!(
             r#"
             UPDATE submissions
@@ -60,19 +61,14 @@ impl SubmissionRepository for Transaction<'_, MySql> {
             status,
             id,
         )
-        .execute(self)
+        .execute(&mut *conn)
         .await?;
         Ok(result.rows_affected())
     }
-}
 
-#[async_trait]
-pub trait ProblemsRepository {
-    async fn fetch_problem(&self, problem_id: i64) -> Result<Problem>;
-}
-#[async_trait]
-impl ProblemsRepository for DbPool {
-    async fn fetch_problem(&self, problem_id: i64) -> Result<Problem> {
+    pub async fn fetch_problem(conn: &mut MySqlConnection, problem_id: i64) -> Result<Problem> {
+        let conn = conn.acquire().await?;
+
         let problems = sqlx::query_as!(
             Problem,
             r#"
@@ -102,19 +98,17 @@ impl ProblemsRepository for DbPool {
             "#,
             problem_id,
         )
-        .fetch_one(self)
+        .fetch_one(&mut *conn)
         .await?;
         Ok(problems)
     }
-}
 
-#[async_trait]
-pub trait TestcasesRepository {
-    async fn fetch_testcases(&self, problem_id: i64) -> Result<Vec<Testcase>>;
-}
-#[async_trait]
-impl TestcasesRepository for DbPool {
-    async fn fetch_testcases(&self, problem_id: i64) -> Result<Vec<Testcase>> {
+    pub async fn fetch_testcases(
+        conn: &mut MySqlConnection,
+        problem_id: i64,
+    ) -> Result<Vec<Testcase>> {
+        let conn = conn.acquire().await?;
+
         let testcases = sqlx::query_as!(
             Testcase,
             r#"
@@ -136,19 +130,14 @@ impl TestcasesRepository for DbPool {
             "#,
             problem_id,
         )
-        .fetch_all(self)
+        .fetch_all(&mut *conn)
         .await?;
         Ok(testcases)
     }
-}
 
-#[async_trait]
-pub trait TestcaseResultsRepository {
-    async fn delete_testcase_results(&self, submit_id: i64) -> Result<()>;
-}
-#[async_trait]
-impl TestcaseResultsRepository for DbPool {
-    async fn delete_testcase_results(&self, submit_id: i64) -> Result<()> {
+    pub async fn delete_testcase_results(conn: &mut MySqlConnection, submit_id: i64) -> Result<()> {
+        let conn = conn.acquire().await?;
+
         sqlx::query(
             r#"
             UPDATE
@@ -162,7 +151,7 @@ impl TestcaseResultsRepository for DbPool {
         )
         .bind(Local::now().naive_local())
         .bind(submit_id)
-        .execute(self)
+        .execute(&mut *conn)
         .await?;
 
         Ok(())

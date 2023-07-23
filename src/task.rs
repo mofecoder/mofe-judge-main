@@ -7,12 +7,10 @@ use crate::{
         CompileRequest, CompileResponse, DownloadRequest, JudgeRequest, JudgeResponse, Problem,
         Testcase,
     },
-    repository::{
-        ProblemsRepository, SubmissionRepository, TestcaseResultsRepository, TestcasesRepository,
-    },
     utils,
 };
 
+use crate::repository::CafeCoderDb;
 use anyhow::{bail, Result};
 use bollard::{
     container::{Config, CreateContainerOptions, RemoveContainerOptions, StartContainerOptions},
@@ -33,6 +31,7 @@ use std::string::{String, ToString};
 use std::vec::Vec;
 use std::{sync::Arc, time::Duration};
 use tokio::time::sleep;
+
 // submit が取得できなかったときの次の取得までの間隔
 const INTERVAL: Duration = Duration::from_secs(1);
 const MEM_LIMIT: i32 = 1_024_000; // 1,024,000KB(1,024KB)
@@ -202,28 +201,34 @@ impl JudgeTask {
     /// その1件のステータスを「ジャッジ中」にする
     async fn fetch_submit(&self) -> Result<entities::Submission> {
         let mut conn = self.db_conn.begin().await?;
-        let submit = conn.get_submissions().await?;
-        conn.update_status(submit.id, "WIP").await?;
+        let submission = CafeCoderDb::get_submission(&mut conn).await?;
+        CafeCoderDb::update_status(&mut conn, submission.id, "WIP").await?;
         conn.commit().await?;
-        Ok(submit)
+        Ok(submission)
     }
     async fn fetch_problem(&self, problem_id: i64) -> Result<entities::Problem> {
-        Ok(self.db_conn.fetch_problem(problem_id).await?)
+        let mut conn = self.db_conn.acquire().await?;
+        Ok(CafeCoderDb::fetch_problem(&mut conn, problem_id).await?)
     }
 
     async fn fetch_testcases(&self, problem_id: i64) -> Result<Vec<entities::Testcase>> {
-        Ok(self.db_conn.fetch_testcases(problem_id).await?)
+        let mut conn = self.db_conn.acquire().await?;
+        Ok(CafeCoderDb::fetch_testcases(&mut conn, problem_id).await?)
     }
 
     async fn delete_testcase_results(&self, submit_id: i64) -> Result<()> {
-        Ok(self.db_conn.delete_testcase_results(submit_id).await?)
+        let mut conn = self.db_conn.acquire().await?;
+        Ok(CafeCoderDb::delete_testcase_results(&mut conn, submit_id).await?)
     }
 
     /// Docker コンテナを指定された名前で立ち上げる
     async fn create_container(&self, name: &str) -> Result<(ContainerCreateResponse, String)> {
-        const IMAGE: &str = "cafecoder_docker:2104";
+        const IMAGE: &str = "cafecoder_docker:2307";
 
-        let options = Some(CreateContainerOptions { name });
+        let options = Some(CreateContainerOptions {
+            name,
+            platform: None,
+        });
         let config = Config {
             image: Some(IMAGE),
             host_config: Some(HostConfig {
@@ -344,7 +349,7 @@ impl JudgeTask {
 
     async fn save_internal_error(&self, submit_id: i64) -> Result<()> {
         let mut conn = self.db_conn.begin().await?;
-        let row = conn.update_status(submit_id, "IE").await?;
+        let row = CafeCoderDb::update_status(&mut conn, submit_id, "IE").await?;
         if row == 1 {
             conn.commit().await?;
 
