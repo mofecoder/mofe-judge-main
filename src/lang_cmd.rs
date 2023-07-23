@@ -13,6 +13,17 @@ pub struct Command {
 pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
     let mut map = HashMap::new();
     map.insert(
+        "cpp20_gcc:12.2.0".to_string(),
+        Command {
+            compile: "g++-12 /judge/Main.cpp -O2 -lm -std=gnu++17 -o /judge/Main.out 2> /judge/userStderr.txt"
+                .to_string(),
+            run:
+            "/judge/Main.out < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt"
+                .to_string(),
+            file_name: "Main.cpp".to_string(),
+        },
+    );
+    map.insert(
         "c17_gcc:10.2.0".to_string(), //C17
         Command {
             compile: "gcc-10 /judge/Main.c -O2 -lm -std=gnu17 -o /judge/Main.out 2> /judge/userStderr.txt"
@@ -86,7 +97,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         Command {
             compile: "source ~/.profile && mcs /judge/Main.cs -out:/judge/Main.exe 2> /judge/userStderr.txt".to_string(),
             run: "source ~/.profile && mono /judge/Main.exe < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
-            file_name: "Main.cs".to_string(), 
+            file_name: "Main.cs".to_string(),
         },
     );
     map.insert( "cs_dotnet:5.0".to_string(), // C#
@@ -114,7 +125,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         Command {
             compile: "source ~/.profile && cd /judge/rust_workspace && mv /judge/Main.rs /judge/rust_workspace/src/main.rs && cargo build --release 2> /judge/userStderr.txt && cd /".to_string(),
             run: "/judge/rust_workspace/target/release/Rust < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
-            file_name: "Main.rs".to_string(), 
+            file_name: "Main.rs".to_string(),
         },
     );
     map.insert( "ruby:2.7.2".to_string(),
