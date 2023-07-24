@@ -24,6 +24,14 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         },
     );
     map.insert(
+        "python:3.11.4".to_string(), //python3
+        Command {
+            compile: "python3 -m py_compile /judge/Main.py 2> /judge/userStderr.txt".to_string(),
+            run: "python3 /judge/Main.py < /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt".to_string(),
+            file_name: "Main.py".to_string(),
+        },
+    );
+    map.insert(
         "c17_gcc:10.2.0".to_string(), //C17
         Command {
             compile: "gcc-10 /judge/Main.c -O2 -lm -std=gnu17 -o /judge/Main.out 2> /judge/userStderr.txt"
