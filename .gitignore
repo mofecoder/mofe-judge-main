@@ -1,3 +1,6 @@
 /target
 /.env
 /.env_honban
+/scripts
+!/scripts/language_update.py
+!/scripts/lang_cmd_base{.rs,_json}
