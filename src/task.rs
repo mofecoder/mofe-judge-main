@@ -12,6 +12,7 @@ use crate::{
 
 use crate::repository::CafeCoderDb;
 use anyhow::{bail, Result};
+use bollard::models::{Mount, MountBindOptions, MountTypeEnum};
 use bollard::{
     container::{Config, CreateContainerOptions, RemoveContainerOptions, StartContainerOptions},
     models::HostConfig,
@@ -29,7 +30,7 @@ use std::option::Option::{None, Some};
 use std::result::Result::{Err, Ok};
 use std::string::{String, ToString};
 use std::vec::Vec;
-use std::{sync::Arc, time::Duration};
+use std::{env, sync::Arc, time::Duration};
 use tokio::time::sleep;
 
 // submit が取得できなかったときの次の取得までの間隔
@@ -229,14 +230,31 @@ impl JudgeTask {
             name,
             platform: None,
         });
+        const SERVICE_ACCOUNT_PATH: &str = "/service-account.json";
         let config = Config {
             image: Some(ENV_CONFIG.docker_image_name.clone()),
             host_config: Some(HostConfig {
                 memory: Some(2_147_483_648_i64),
                 pids_limit: Some(512_i64),
                 privileged: Some(true),
+                mounts: Some(vec![Mount {
+                    typ: Some(MountTypeEnum::BIND),
+                    source: Some(String::from(
+                        env::current_dir()
+                            .unwrap()
+                            .join(&ENV_CONFIG.google_application_credentials)
+                            .to_str(),
+                    )),
+                    target: Some(String::from(SERVICE_ACCOUNT_PATH)),
+                    read_only: Some(true),
+                    ..Default::default()
+                }]),
                 ..Default::default()
             }),
+            env: Some(vec![
+                format!("DATABASE_URL={}", ENV_CONFIG.database_url),
+                format!("GOOGLE_APPLICATION_CREDENTIALS={}", SERVICE_ACCOUNT_PATH),
+            ]),
             ..Default::default()
         };
         let res = self.docker_conn.create_container(options, config).await?;
