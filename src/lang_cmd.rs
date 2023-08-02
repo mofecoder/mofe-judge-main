@@ -14,7 +14,7 @@ impl Command {
     fn new(compile: &str, run: &str, file_name: &str) -> Self {
         Self {
             compile: compile.to_string() + " 2> /judge/userStderr.txt",
-            run: run.to_string() + " > /judge/userStdout.txt 2> /judge/userStderr.txt",
+            run: run.to_string() + "< /judge/testcase.txt > /judge/userStdout.txt 2> /judge/userStderr.txt",
             file_name: file_name.to_string(),
         }
     }
