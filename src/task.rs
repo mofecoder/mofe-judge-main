@@ -346,7 +346,7 @@ impl JudgeTask {
 
         if resp.status() != StatusCode::OK {
             bail!(format!(
-                "judge: response status code was not 200 OK\n{}",
+                "judge: response status code was not 200 OK\n{}\n",
                 resp.text().await?
             ));
         }

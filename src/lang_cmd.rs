@@ -61,21 +61,13 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         ),
     );
     map.insert(
-        "".to_string(),
-        Command::new(
-            "mcs ./Main.cs -out:Main.exe",
-            "python3.11 ./Main.py",
-            "Main.cs",
-        ),
-    );
-    map.insert(
         "go:1.20.6".to_string(),
         Command::new("go build ./Main.go -o Main.out", "./Main.out", "Main.go"),
     );
     map.insert(
         "cs_dotnet:7.0".to_string(),
         Command::new(
-            "dotnet publish -o . -c Release -v q --nolog 1>&2",
+            "dotnet publish -o . -c Release -v q --nologo 1>&2",
             "./Main",
             "Main.cs",
         ),
