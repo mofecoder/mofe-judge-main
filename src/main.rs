@@ -14,7 +14,6 @@ use futures::future::join_all;
 use std::sync::Arc;
 
 // TODO(magurotuna): ここの値も要検討
-const JOB_THREADS: usize = 3;
 const HTTP_TIMEOUT: u64 = 180;
 
 // TODO(magurotuna): スレッド数指定を柔軟に行うため、Tokio の RuntimeBuilder を使うよう書き換える
@@ -38,7 +37,7 @@ async fn main() -> Result<()> {
         .build()?;
 
     let mut handles = Vec::new();
-    for _ in 0..JOB_THREADS {
+    for _ in 0..ENV_CONFIG.job_threads {
         let handle = tokio::spawn(task::gen_job(
             db_conn.clone(),
             docker_conn.clone(),
