@@ -83,7 +83,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
     map.insert(
         "rust:1.71.0".to_string(),
         Command::new(
-            "cargo build --release --quiet --offline",
+            "mv Main.rs src/main.rs && cargo build --release --quiet --offline",
             "./target/release/Rust",
             "Main.rs",
         ),
