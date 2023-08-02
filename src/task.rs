@@ -223,14 +223,12 @@ impl JudgeTask {
 
     /// Docker コンテナを指定された名前で立ち上げる
     async fn create_container(&self, name: &str) -> Result<(ContainerCreateResponse, String)> {
-        const IMAGE: &str = "cafecoder_docker:2307";
-
         let options = Some(CreateContainerOptions {
             name,
             platform: None,
         });
         let config = Config {
-            image: Some(IMAGE),
+            image: Some(ENV_CONFIG.docker_image_name.clone()),
             host_config: Some(HostConfig {
                 memory: Some(2_147_483_648_i64),
                 pids_limit: Some(512_i64),

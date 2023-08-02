@@ -18,7 +18,7 @@ const JOB_THREADS: usize = 3;
 const HTTP_TIMEOUT: u64 = 180;
 
 // TODO(magurotuna): スレッド数指定を柔軟に行うため、Tokio の RuntimeBuilder を使うよう書き換える
-#[tokio::main(worker_threads = 4)]
+#[tokio::main()]
 async fn main() -> Result<()> {
     let db_conn = Arc::new(db::new_pool(&ENV_CONFIG.database_url).await?);
     /*
