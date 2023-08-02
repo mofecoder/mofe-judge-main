@@ -12,7 +12,7 @@ use crate::{
 
 use crate::repository::CafeCoderDb;
 use anyhow::{bail, Result};
-use bollard::models::{Mount, MountBindOptions, MountTypeEnum};
+use bollard::models::{Mount, MountTypeEnum};
 use bollard::{
     container::{Config, CreateContainerOptions, RemoveContainerOptions, StartContainerOptions},
     models::HostConfig,
@@ -243,7 +243,8 @@ impl JudgeTask {
                         env::current_dir()
                             .unwrap()
                             .join(&ENV_CONFIG.google_application_credentials)
-                            .to_str(),
+                            .to_str()
+                            .unwrap(),
                     )),
                     target: Some(String::from(SERVICE_ACCOUNT_PATH)),
                     read_only: Some(true),
