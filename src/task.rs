@@ -126,6 +126,7 @@ async fn execute_task(
         .await?;
 
     if download_response.status() != StatusCode::OK {
+        task.remove_container(&container_name).await?;
         return Err(anyhow::anyhow!("Download failed"));
     }
 
@@ -140,6 +141,7 @@ async fn execute_task(
         .await?;
     // コンパイルエラーはコンテナの中で処理をしているはずなので ok
     if !compile_response.0.ok {
+        task.remove_container(&container_name).await?;
         return Ok(());
     }
 
