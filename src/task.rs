@@ -146,6 +146,7 @@ async fn execute_task(
         return Ok(());
     }
 
+    task.save_compiling(submit.id).await?;
     let _judge_response = task.request_judge(&ip_addr, &req).await?;
     // TODO judgeレスポンスによる処理
     // コンテナを削除
@@ -205,7 +206,7 @@ impl JudgeTask {
     async fn fetch_submit(&self) -> Result<entities::Submission> {
         let mut conn = self.db_conn.begin().await?;
         let submission = CafeCoderDb::get_submission(&mut conn).await?;
-        CafeCoderDb::update_status(&mut conn, submission.id, "WIP").await?;
+        CafeCoderDb::update_status(&mut conn, submission.id, "CP").await?;
         conn.commit().await?;
         Ok(submission)
     }
@@ -222,6 +223,12 @@ impl JudgeTask {
     async fn delete_testcase_results(&self, submit_id: i64) -> Result<()> {
         let mut conn = self.db_conn.acquire().await?;
         Ok(CafeCoderDb::delete_testcase_results(&mut conn, submit_id).await?)
+    }
+
+    async fn save_compiling(&self, submission_id: i64) -> Result<()> {
+        let mut conn = self.db_conn.acquire().await?;
+        CafeCoderDb::update_status(&mut conn, submission_id, "CP").await?;
+        Ok(())
     }
 
     /// Docker コンテナを指定された名前で立ち上げる
