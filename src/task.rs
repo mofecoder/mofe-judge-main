@@ -131,6 +131,7 @@ async fn execute_task(
         return Err(anyhow::anyhow!("Download failed"));
     }
 
+    task.save_compiling(submit.id, "CP").await?;
     let compile_response = task
         .request_compile(
             &ip_addr,
@@ -146,7 +147,7 @@ async fn execute_task(
         return Ok(());
     }
 
-    task.save_compiling(submit.id).await?;
+    task.save_compiling(submit.id, "WIP").await?;
     let _judge_response = task.request_judge(&ip_addr, &req).await?;
     // TODO judgeレスポンスによる処理
     // コンテナを削除
@@ -225,9 +226,9 @@ impl JudgeTask {
         Ok(CafeCoderDb::delete_testcase_results(&mut conn, submit_id).await?)
     }
 
-    async fn save_compiling(&self, submission_id: i64) -> Result<()> {
+    async fn save_compiling(&self, submission_id: i64, status: &str) -> Result<()> {
         let mut conn = self.db_conn.acquire().await?;
-        CafeCoderDb::update_status(&mut conn, submission_id, "CP").await?;
+        CafeCoderDb::update_status(&mut conn, submission_id, status).await?;
         Ok(())
     }
 
