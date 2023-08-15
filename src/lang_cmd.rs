@@ -50,7 +50,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
     );
     map.insert(
         "java:17.0.7".to_string(),
-        Command::new("javac ./Main.java", "java ./Main", "Main.java"),
+        Command::new("javac ./Main.java", "java Main", "Main.java"),
     );
     map.insert(
         "python:3.11.4".to_string(),
