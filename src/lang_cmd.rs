@@ -35,7 +35,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
     map.insert(
         "cpp20_gcc:12.2.0".to_string(),
         Command::new(
-            "g++-12 ./Main.cpp -O2 -lm -std=gnu++20 -I/opt/ac-library -I/opt/testlib -o Main.out -DONLINE_JUDGE -Wall -Wextra",
+            "g++-12 ./Main.cpp -O2 -lm -std=gnu++20 -I/opt/ac-library -I/opt/testlib -o Main.out -DONLINE_JUDGE -Wall -Wextra -fsplit-stack",
             "./Main.out",
             "Main.cpp"
         )
@@ -43,7 +43,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
     map.insert(
         "cpp23_gcc:12.2.0".to_string(),
         Command::new(
-            "g++-12 ./Main.cpp -O2 -lm -std=gnu++2b -I/opt/ac-library -I/opt/testlib -o Main.out -DONLINE_JUDGE -Wall -Wextra",
+            "g++-12 ./Main.cpp -O2 -lm -std=gnu++2b -I/opt/ac-library -I/opt/testlib -o Main.out -DONLINE_JUDGE -Wall -Wextra -fsplit-stack",
             "./Main.out",
             "Main.cpp"
         )
@@ -62,7 +62,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
     );
     map.insert(
         "go:1.20.6".to_string(),
-        Command::new("go build ./Main.go -o Main.out", "./Main.out", "Main.go"),
+        Command::new("go build -o Main.out ./Main.go", "./Main.out", "Main.go"),
     );
     map.insert(
         "cs_dotnet:7.0".to_string(),
