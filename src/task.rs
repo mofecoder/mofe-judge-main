@@ -60,7 +60,7 @@ pub async fn gen_job(db_conn: Arc<DbPool>, docker_conn: Arc<Docker>, http_client
             match execute_task(&task, &submit, &container_name).await {
                 Ok(()) => (),
                 Err(e) => {
-                    eprint!("{}", e);
+                    eprintln!("{}", e);
                     sleep(INTERVAL).await;
                     task.save_internal_error(submit.id).await?;
                     //task.remove_container(&container_name).await?;

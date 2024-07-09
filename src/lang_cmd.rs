@@ -49,7 +49,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         )
     );
     map.insert(
-        "java:17.0.7".to_string(),
+        "java:17.0.11".to_string(),
         Command::new("javac ./Main.java", "java Main", "Main.java"),
     );
     map.insert(
@@ -73,7 +73,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         ),
     );
     map.insert(
-        "nim:1.6.14".to_string(),
+        "nim:2.0.8".to_string(),
         Command::new(
             "nim cpp -d:release --opt:speed --multimethods:on -o:Main.out Main.nim",
             "./Main.out",
@@ -81,7 +81,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         ),
     );
     map.insert(
-        "rust:1.71.0".to_string(),
+        "rust:1.79.0".to_string(),
         Command::new(
             "mv Main.rs src/main.rs && cargo build --release --quiet --offline",
             "./target/release/Rust",
@@ -93,7 +93,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         Command::new("ruby -w -c ./Main.rb", "ruby ./Main.rb", "Main.rb"),
     );
     map.insert(
-        "kotlin:1.9.0".to_string(),
+        "kotlin:2.0.0".to_string(),
         Command::new(
             "kotlinc ./Main.kt -include-runtime -d Main.jar",
             "kotlin Main.jar",
@@ -109,7 +109,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         ),
     );
     map.insert(
-        "crystal:1.8.2".to_string(),
+        "crystal:1.12.2".to_string(),
         Command::new(
             "crystal build --release --no-debug --no-color -o Main.out ./Main.cr",
             "./Main.out",
@@ -117,11 +117,11 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         ),
     );
     map.insert(
-        "text_cat:8.32".to_string(),
+        "text_cat:9.1".to_string(),
         Command::new(":", "cat Main.txt", "Main.txt"),
     );
     map.insert(
-        "perl:5.38.2".to_string(),
+        "perl:5.36.0".to_string(),
         Command::new("perl -W -c ./Main.pl", "perl -X ./Main.pl", "Main.pl"),
     );
     map.insert(
@@ -133,7 +133,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         Command::new("bash -n ./Main.sh", "bash ./Main.sh", "Main.sh"),
     );
     map.insert(
-        "pypy310:7.3.12".to_string(),
+        "pypy310:7.3.16".to_string(),
         Command::new(
             "pypy3 -m py_compile ./Main.py",
             "pypy3 ./Main.py",
