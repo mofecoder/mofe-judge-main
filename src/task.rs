@@ -240,6 +240,7 @@ impl JudgeTask {
         });
         const SERVICE_ACCOUNT_PATH: &str = "/service-account.json";
         const ISOLATE_SYSTEMD_PATH: &str = "/run/isolate/cgroup";
+        const CGROUP_PATH: &str = "/sys/fs/cgroup/";
         let config = Config {
             image: Some(ENV_CONFIG.docker_image_name.clone()),
             host_config: Some(HostConfig {
@@ -263,6 +264,13 @@ impl JudgeTask {
                     Mount {
                         target: Some(String::from(ISOLATE_SYSTEMD_PATH)),
                         source: Some(String::from(ISOLATE_SYSTEMD_PATH)),
+                        read_only: Some(true),
+                        typ: Some(MountTypeEnum::BIND),
+                        ..Default::default()
+                    },
+                    Mount {
+                        target: Some(String::from(CGROUP_PATH)),
+                        source: Some(String::from(CGROUP_PATH)),
                         read_only: Some(true),
                         typ: Some(MountTypeEnum::BIND),
                         ..Default::default()
