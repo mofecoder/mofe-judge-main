@@ -35,7 +35,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
     map.insert(
         "cpp20_gcc:12.2.0".to_string(),
         Command::new(
-            "g++-12 ./Main.cpp -O2 -lm -std=gnu++20 -I/opt/ac-library -I/opt/testlib -o Main.out -DONLINE_JUDGE -Wall -Wextra -fsplit-stack",
+            "g++-12 ./Main.cpp -O2 -lm -std=gnu++20 -I/opt/ac-library -I/opt/testlib -o Main.out -DONLINE_JUDGE -Wall -Wextra",
             "./Main.out",
             "Main.cpp"
         )
@@ -43,7 +43,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
     map.insert(
         "cpp23_gcc:12.2.0".to_string(),
         Command::new(
-            "g++-12 ./Main.cpp -O2 -lm -std=gnu++2b -I/opt/ac-library -I/opt/testlib -o Main.out -DONLINE_JUDGE -Wall -Wextra -fsplit-stack",
+            "g++-12 ./Main.cpp -O2 -lm -std=gnu++2b -I/opt/ac-library -I/opt/testlib -o Main.out -DONLINE_JUDGE -Wall -Wextra",
             "./Main.out",
             "Main.cpp"
         )
@@ -53,19 +53,19 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         Command::new("javac ./Main.java", "java Main", "Main.java"),
     );
     map.insert(
-        "python:3.11.4".to_string(),
+        "python:3.12.4".to_string(),
         Command::new(
-            "python3.11 -m py_compile ./Main.py",
-            "python3.11 ./Main.py",
+            "python3.12 -m py_compile ./Main.py",
+            "python3.12 ./Main.py",
             "Main.py",
         ),
     );
     map.insert(
-        "go:1.20.6".to_string(),
-        Command::new("go build -o Main.out ./Main.go", "./Main.out", "Main.go"),
+        "go:1.22.5".to_string(),
+        Command::new("go build ./Main.go -o Main.out", "./Main.out", "Main.go"),
     );
     map.insert(
-        "cs_dotnet:7.0".to_string(),
+        "cs_dotnet:8.0".to_string(),
         Command::new(
             "dotnet publish -o . -c Release -v q --nologo 1>&2",
             "./Main",
@@ -89,7 +89,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         ),
     );
     map.insert(
-        "ruby:3.2.2".to_string(),
+        "ruby:3.3.2".to_string(),
         Command::new("ruby -w -c ./Main.rb", "ruby ./Main.rb", "Main.rb"),
     );
     map.insert(
@@ -121,7 +121,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
         Command::new(":", "cat Main.txt", "Main.txt"),
     );
     map.insert(
-        "perl:5.36.0".to_string(),
+        "perl:5.38.2".to_string(),
         Command::new("perl -W -c ./Main.pl", "perl -X ./Main.pl", "Main.pl"),
     );
     map.insert(
