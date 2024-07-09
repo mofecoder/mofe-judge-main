@@ -239,25 +239,34 @@ impl JudgeTask {
             platform: None,
         });
         const SERVICE_ACCOUNT_PATH: &str = "/service-account.json";
+        const ISOLATE_SYSTEMD_PATH: &str = "/run/isolate/cgroup";
         let config = Config {
             image: Some(ENV_CONFIG.docker_image_name.clone()),
             host_config: Some(HostConfig {
                 memory: Some(2_147_483_648_i64),
                 pids_limit: Some(512_i64),
                 privileged: Some(true),
-                mounts: Some(vec![Mount {
-                    typ: Some(MountTypeEnum::BIND),
-                    source: Some(String::from(
-                        env::current_dir()
-                            .unwrap()
-                            .join(&ENV_CONFIG.google_application_credentials)
-                            .to_str()
-                            .unwrap(),
-                    )),
-                    target: Some(String::from(SERVICE_ACCOUNT_PATH)),
-                    read_only: Some(true),
-                    ..Default::default()
-                }]),
+                mounts: Some(vec![
+                    Mount {
+                        typ: Some(MountTypeEnum::BIND),
+                        source: Some(String::from(
+                            env::current_dir()
+                                .unwrap()
+                                .join(&ENV_CONFIG.google_application_credentials)
+                                .to_str()
+                                .unwrap(),
+                        )),
+                        target: Some(String::from(SERVICE_ACCOUNT_PATH)),
+                        read_only: Some(true),
+                        ..Default::default()
+                    },
+                    Mount {
+                        target: Some(String::from(ISOLATE_SYSTEMD_PATH)),
+                        source: Some(String::from(ISOLATE_SYSTEMD_PATH)),
+                        read_only: Some(true),
+                        ..Default::default()
+                    },
+                ]),
                 ..Default::default()
             }),
             env: Some(vec![
