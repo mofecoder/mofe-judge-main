@@ -264,6 +264,7 @@ impl JudgeTask {
                         target: Some(String::from(ISOLATE_SYSTEMD_PATH)),
                         source: Some(String::from(ISOLATE_SYSTEMD_PATH)),
                         read_only: Some(true),
+                        typ: Some(MountTypeEnum::BIND),
                         ..Default::default()
                     },
                 ]),
