@@ -62,7 +62,7 @@ pub fn generate_lang_cmd_map() -> HashMap<String, Command> {
     );
     map.insert(
         "go:1.22.5".to_string(),
-        Command::new("go build ./Main.go -o Main.out", "./Main.out", "Main.go"),
+        Command::new("go build -o Main.out ./Main.go", "./Main.out", "Main.go"),
     );
     map.insert(
         "cs_dotnet:8.0".to_string(),
