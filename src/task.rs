@@ -32,6 +32,7 @@ use std::string::{String, ToString};
 use std::vec::Vec;
 use std::{env, sync::Arc, time::Duration};
 use tokio::time::sleep;
+use crate::entities::Submission;
 
 // submit が取得できなかったときの次の取得までの間隔
 const INTERVAL: Duration = Duration::from_secs(1);
@@ -58,7 +59,7 @@ pub async fn gen_job(db_conn: Arc<DbPool>, docker_conn: Arc<Docker>, http_client
             let container_name = format!("DUMMY_NAME_{}", utils::gen_rand_string(6));
 
             match execute_task(&task, &submit, &container_name).await {
-                Ok(()) => (),
+                Ok(()) => Ok(()),
                 Err(e) => {
                     eprintln!("{}", e);
                     sleep(INTERVAL).await;
@@ -67,7 +68,6 @@ pub async fn gen_job(db_conn: Arc<DbPool>, docker_conn: Arc<Docker>, http_client
                     bail!("internal error");
                 }
             }
-            Ok(())
         }
     };
 
@@ -85,42 +85,36 @@ pub async fn gen_job(db_conn: Arc<DbPool>, docker_conn: Arc<Docker>, http_client
         // ログ出力とか？
     }
 }
-async fn execute_task(
+
+async fn execute_inner(
     task: &JudgeTask,
-    submit: &entities::Submission,
+    submission: &Submission,
     container_name: &str,
+    ip_addr: &String
 ) -> Result<()> {
-    let command = match LANG_CMD.get(&submit.lang) {
+    let command = match LANG_CMD.get(&submission.lang) {
         Some(command) => command,
         None => {
             // statusをIEへ
-            task.save_internal_error(submit.id).await?;
+            task.save_internal_error(submission.id).await?;
 
             bail!("Couldn't find a language command setting.");
         }
     };
 
-    // リジャッジなら過去の testcase_results をすべて消す。
-    if submit.status == "WR" {
-        task.delete_testcase_results(submit.id).await?;
-    }
 
-    // コンテナ作成
-
-    let (_container, ip_addr) = task.create_container(&container_name).await?;
     // テストケース、問題を取得
+    let problem = task.fetch_problem(submission.problem_id).await?;
+    let testcases = task.fetch_testcases(submission.problem_id).await?;
 
-    let problem = task.fetch_problem(submit.problem_id).await?;
-    let testcases = task.fetch_testcases(submit.problem_id).await?;
-
-    let req = generate_judge_request(submit.id, &command.run, problem, testcases);
+    let req = generate_judge_request(submission.id, &command.run, problem, testcases);
 
     let download_response = task
         .request_download(
             &ip_addr,
             &DownloadRequest {
-                submit_id: submit.id,
-                code_path: submit.path.clone(),
+                submit_id: submission.id,
+                code_path: submission.path.clone(),
                 filename: command.file_name.clone(),
             },
         )
@@ -131,12 +125,12 @@ async fn execute_task(
         return Err(anyhow::anyhow!("Download failed"));
     }
 
-    task.save_compiling(submit.id, "CP").await?;
+    task.save_compiling(submission.id, "CP").await?;
     let compile_response = task
         .request_compile(
             &ip_addr,
             &CompileRequest {
-                submit_id: submit.id,
+                submit_id: submission.id,
                 cmd: command.compile.clone(),
             },
         )
@@ -147,13 +141,33 @@ async fn execute_task(
         return Ok(());
     }
 
-    task.save_compiling(submit.id, "WIP").await?;
+    task.save_compiling(submission.id, "WIP").await?;
     let _judge_response = task.request_judge(&ip_addr, &req).await?;
     // TODO judgeレスポンスによる処理
     // コンテナを削除
     task.remove_container(&container_name).await?;
 
     Ok(())
+}
+
+async fn execute_task(
+    task: &JudgeTask,
+    submit: &Submission,
+    container_name: &str,
+) -> Result<()> {
+    // リジャッジなら過去の testcase_results をすべて消す。
+    if submit.status == "WR" {
+        task.delete_testcase_results(submit.id).await?;
+    }
+
+    // コンテナ作成
+    let (_container, ip_addr) = task.create_container(&container_name).await?;
+
+    let res = execute_inner(task, submit, container_name, &ip_addr).await;
+
+    task.remove_container(container_name).await?;
+
+    res
 }
 fn generate_judge_request(
     submit_id: i64,

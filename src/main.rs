@@ -9,12 +9,9 @@ mod utils;
 use anyhow::Result;
 use bollard::API_DEFAULT_VERSION;
 use config::ENV_CONFIG;
-use core::time::Duration;
 use futures::future::join_all;
 use std::sync::Arc;
 
-// TODO(magurotuna): ここの値も要検討
-const HTTP_TIMEOUT: u64 = 180;
 
 // TODO(magurotuna): スレッド数指定を柔軟に行うため、Tokio の RuntimeBuilder を使うよう書き換える
 #[tokio::main()]
@@ -32,9 +29,7 @@ async fn main() -> Result<()> {
         10,
         API_DEFAULT_VERSION,
     )?);
-    let http_client = reqwest::Client::builder()
-        .timeout(Duration::new(HTTP_TIMEOUT, 0))
-        .build()?;
+    let http_client = reqwest::Client::builder().build()?;
 
     let mut handles = Vec::new();
     for _ in 0..ENV_CONFIG.job_threads {
