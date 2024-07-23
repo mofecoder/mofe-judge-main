@@ -64,7 +64,6 @@ pub async fn gen_job(db_conn: Arc<DbPool>, docker_conn: Arc<Docker>, http_client
                     eprintln!("{}", e);
                     sleep(INTERVAL).await;
                     task.save_internal_error(submit.id).await?;
-                    //task.remove_container(&container_name).await?;
                     bail!("internal error");
                 }
             }
@@ -121,7 +120,6 @@ async fn execute_inner(
         .await?;
 
     if download_response.status() != StatusCode::OK {
-        task.remove_container(&container_name).await?;
         return Err(anyhow::anyhow!("Download failed"));
     }
 
@@ -137,15 +135,12 @@ async fn execute_inner(
         .await?;
     // コンパイルエラーはコンテナの中で処理をしているはずなので ok
     if !compile_response.0.ok {
-        task.remove_container(&container_name).await?;
         return Ok(());
     }
 
     task.save_compiling(submission.id, "WIP").await?;
     let _judge_response = task.request_judge(&ip_addr, &req).await?;
     // TODO judgeレスポンスによる処理
-    // コンテナを削除
-    task.remove_container(&container_name).await?;
 
     Ok(())
 }
